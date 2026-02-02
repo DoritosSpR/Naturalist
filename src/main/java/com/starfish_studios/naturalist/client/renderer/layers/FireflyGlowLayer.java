@@ -1,0 +1,42 @@
+package com.starfish_studios.naturalist.client.renderer.layers;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.starfish_studios.naturalist.Naturalist;
+import com.starfish_studios.naturalist.entity.Firefly;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import software.bernie.geckolib.cache.object.BakedGeoModel;
+import software.bernie.geckolib.renderer.GeoRenderer;
+import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
+
+@OnlyIn(Dist.CLIENT)
+public class FireflyGlowLayer extends GeoRenderLayer<Firefly> {
+    private static final ResourceLocation GLOW_OVERLAY = ResourceLocation.fromNamespaceAndPath(Naturalist.MOD_ID, "textures/entity/firefly_glow.png");
+    private static final ResourceLocation GLOW_EMISSIVE = ResourceLocation.fromNamespaceAndPath(Naturalist.MOD_ID, "textures/entity/firefly_glow_e.png");
+
+    public FireflyGlowLayer(GeoRenderer<Firefly> entityRendererIn) {
+        super(entityRendererIn);
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    @Override
+    public void render(PoseStack poseStack, Firefly entity, BakedGeoModel bakedModel, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, float partialTicks, int packedLightIn, int packedOverlay) {
+        if (!entity.isGlowing()) {
+            return;
+        }
+        int frame = 30 - Math.min(entity.getGlowTicksRemaining(), 30);
+
+        RenderType overlayType = RenderType.entityTranslucent(GLOW_OVERLAY);
+        VertexConsumer overlayBuffer = new FireflyGlowUvConsumer(bufferSource.getBuffer(overlayType), frame);
+        getRenderer().reRender(getDefaultBakedModel(entity), poseStack, bufferSource, entity, overlayType, overlayBuffer, partialTicks, packedLightIn, OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
+
+        RenderType emissiveType = RenderType.entityTranslucentEmissive(GLOW_EMISSIVE);
+        VertexConsumer emissiveBuffer = new FireflyGlowUvConsumer(bufferSource.getBuffer(emissiveType), frame);
+        getRenderer().reRender(getDefaultBakedModel(entity), poseStack, bufferSource, entity, emissiveType, emissiveBuffer, partialTicks, packedLightIn, OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
+    }
+}

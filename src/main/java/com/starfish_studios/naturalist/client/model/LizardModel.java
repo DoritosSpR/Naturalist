@@ -1,0 +1,59 @@
+package com.starfish_studios.naturalist.client.model;
+
+import com.starfish_studios.naturalist.Naturalist;
+import com.starfish_studios.naturalist.entity.Lizard;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.cache.object.GeoBone;
+import software.bernie.geckolib.constant.DataTickets;
+import software.bernie.geckolib.model.GeoModel;
+import software.bernie.geckolib.model.data.EntityModelData;
+
+@OnlyIn(Dist.CLIENT)
+public class LizardModel extends GeoModel<Lizard> {
+    public static final ResourceLocation[] TEXTURE_LOCATIONS = new ResourceLocation[]{
+            ResourceLocation.fromNamespaceAndPath(Naturalist.MOD_ID, "textures/entity/lizard/green.png"),
+            ResourceLocation.fromNamespaceAndPath(Naturalist.MOD_ID, "textures/entity/lizard/brown.png"),
+            ResourceLocation.fromNamespaceAndPath(Naturalist.MOD_ID, "textures/entity/lizard/beardie.png"),
+            ResourceLocation.fromNamespaceAndPath(Naturalist.MOD_ID, "textures/entity/lizard/leopard_gecko.png")
+    };
+
+    @Override
+    public ResourceLocation getModelResource(Lizard lizard) {
+        return ResourceLocation.fromNamespaceAndPath(Naturalist.MOD_ID, "geo/entity/lizard.geo.json");
+    }
+
+    @Override
+    public ResourceLocation getTextureResource(@NotNull Lizard lizard) {
+        return TEXTURE_LOCATIONS[Math.min(lizard.getVariant(), TEXTURE_LOCATIONS.length - 1)];
+    }
+
+    @Override
+    public @NotNull ResourceLocation getAnimationResource(Lizard lizard) {
+        return ResourceLocation.fromNamespaceAndPath(Naturalist.MOD_ID, "animations/lizard.animation.json");
+    }
+
+    @Override
+    public void setCustomAnimations(@NotNull Lizard entity, long instanceId, AnimationState<Lizard> animationState) {
+        super.setCustomAnimations(entity, instanceId, animationState);
+
+        if (animationState == null) return;
+
+        EntityModelData extraDataOfType = animationState.getData(DataTickets.ENTITY_MODEL_DATA);
+        GeoBone skull = this.getAnimationProcessor().getBone("skull");
+        GeoBone tail = this.getAnimationProcessor().getBone("tail");
+
+        if (skull != null) {
+            assert extraDataOfType != null;
+            skull.setRotX(extraDataOfType.headPitch() * Mth.DEG_TO_RAD);
+            skull.setRotY(extraDataOfType.netHeadYaw() * Mth.DEG_TO_RAD);
+        }
+        if (tail != null) {
+            tail.setHidden(!entity.hasTail());
+        }
+    }
+}

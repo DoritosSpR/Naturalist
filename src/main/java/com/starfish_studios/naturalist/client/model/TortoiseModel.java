@@ -1,0 +1,62 @@
+package com.starfish_studios.naturalist.client.model;
+
+import com.starfish_studios.naturalist.Naturalist;
+import com.starfish_studios.naturalist.entity.Tortoise;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.cache.object.GeoBone;
+import software.bernie.geckolib.constant.DataTickets;
+import software.bernie.geckolib.model.GeoModel;
+import software.bernie.geckolib.model.data.EntityModelData;
+
+@OnlyIn(Dist.CLIENT)
+public class TortoiseModel extends GeoModel<Tortoise> {
+
+    @Override
+    public @NotNull ResourceLocation getModelResource(Tortoise tortoise) {
+        return ResourceLocation.fromNamespaceAndPath(Naturalist.MOD_ID, "geo/entity/tortoise.geo.json");
+    }
+
+    @Override
+    public ResourceLocation getTextureResource(@NotNull Tortoise tortoise) {
+        return switch (tortoise.getVariant()) {
+            case 1 -> ResourceLocation.fromNamespaceAndPath(Naturalist.MOD_ID, "textures/entity/tortoise/green.png");
+            case 2 -> ResourceLocation.fromNamespaceAndPath(Naturalist.MOD_ID, "textures/entity/tortoise/black.png");
+            default -> ResourceLocation.fromNamespaceAndPath(Naturalist.MOD_ID, "textures/entity/tortoise/brown.png");
+        };
+    }
+
+    @Override
+    public ResourceLocation getAnimationResource(Tortoise tortoise) {
+        return ResourceLocation.fromNamespaceAndPath(Naturalist.MOD_ID, "animations/tortoise.animation.json");
+    }
+
+    @Override
+    public void setCustomAnimations(@NotNull Tortoise entity, long instanceId, AnimationState<Tortoise> animationState) {
+        super.setCustomAnimations(entity, instanceId, animationState);
+
+        if (animationState == null) return;
+
+        EntityModelData extraDataOfType = animationState.getData(DataTickets.ENTITY_MODEL_DATA);
+        GeoBone skull = this.getAnimationProcessor().getBone("skull");
+
+        if (skull != null) {
+            if (entity.isBaby()) {
+                skull.setScaleX(1.4F);
+                skull.setScaleY(1.4F);
+                skull.setScaleZ(1.4F);
+            } else {
+                skull.setScaleX(1.0F);
+                skull.setScaleY(1.0F);
+                skull.setScaleZ(1.0F);
+            }
+            assert extraDataOfType != null;
+            skull.setRotX(extraDataOfType.headPitch() * Mth.DEG_TO_RAD);
+            skull.setRotY(extraDataOfType.netHeadYaw() * Mth.DEG_TO_RAD);
+        }
+    }
+}
