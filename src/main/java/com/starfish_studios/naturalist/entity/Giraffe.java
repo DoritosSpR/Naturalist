@@ -46,6 +46,7 @@ import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.animation.PlayState;
+import software.bernie.geckolib.animation.keyframe.event.SoundKeyframeEvent;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class Giraffe extends NaturalistAnimal implements NaturalistGeoEntity {
@@ -417,8 +418,20 @@ public class Giraffe extends NaturalistAnimal implements NaturalistGeoEntity {
         return PlayState.CONTINUE;
     }
 
+    private void soundListener(SoundKeyframeEvent<Giraffe> event) {
+        if (this.level().isClientSide) {
+            String sound = event.getKeyframeData().getSound();
+            if ("step".equals(sound) || "step_-6dB".equals(sound)) {
+                float volume = "step_-6dB".equals(sound) ? 0.1F : 0.2F;
+                this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), NaturalistSoundEvents.GIRAFFE_STEP.get(), this.getSoundSource(), volume, this.getVoicePitch(), false);
+            } else if ("eat".equals(sound)) {
+                this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), NaturalistSoundEvents.GIRAFFE_EAT.get(), this.getSoundSource(), 0.5F, this.getVoicePitch(), false);
+            }
+        }
+    }
+
     @Override
     public void registerControllers(final AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<>(this, "controller", 4, this::predicate));
+        controllers.add(new AnimationController<>(this, "controller", 4, this::predicate).setSoundKeyframeHandler(this::soundListener));
     }
 }

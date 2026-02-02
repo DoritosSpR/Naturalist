@@ -42,6 +42,7 @@ import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.animation.*;
+import software.bernie.geckolib.animation.keyframe.event.SoundKeyframeEvent;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class Bird extends ShoulderRidingEntity implements FlyingAnimal, NaturalistGeoEntity {
@@ -307,9 +308,22 @@ public class Bird extends ShoulderRidingEntity implements FlyingAnimal, Naturali
         }
     }
 
+    private void soundListener(@NotNull SoundKeyframeEvent<Bird> event) {
+        if (this.level().isClientSide) {
+            String sound = event.getKeyframeData().getSound();
+            if ("fly".equals(sound)) {
+                this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), NaturalistSoundEvents.BIRD_FLY.get(), this.getSoundSource(), 0.4F, this.getVoicePitch(), false);
+            } else if ("peck".equals(sound)) {
+                this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), NaturalistSoundEvents.BIRD_PECK.get(), this.getSoundSource(), 0.5F, this.getVoicePitch(), false);
+            } else if ("step".equals(sound)) {
+                this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), NaturalistSoundEvents.BIRD_STEP.get(), this.getSoundSource(), 0.15F, this.getVoicePitch(), false);
+            }
+        }
+    }
+
     @Override
     public void registerControllers(final AnimatableManager.@NotNull ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<>(this, "controller", 0, this::predicate));
+        controllers.add(new AnimationController<>(this, "controller", 0, this::predicate).setSoundKeyframeHandler(this::soundListener));
     }
 
     static class BirdWanderGoal extends WaterAvoidingRandomFlyingGoal {

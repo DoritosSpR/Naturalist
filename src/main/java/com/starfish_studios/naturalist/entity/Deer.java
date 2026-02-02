@@ -31,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
+import software.bernie.geckolib.animation.keyframe.event.SoundKeyframeEvent;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
@@ -233,10 +234,22 @@ public class Deer extends NaturalistAnimal implements NaturalistGeoEntity {
         return PlayState.STOP;
     }
 
+    private void soundListener(@NotNull SoundKeyframeEvent<Deer> event) {
+        if (this.level().isClientSide) {
+            String sound = event.getKeyframeData().getSound();
+            if ("step".equals(sound) || "step_-6dB".equals(sound)) {
+                float volume = "step_-6dB".equals(sound) ? 0.08F : 0.15F;
+                this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), NaturalistSoundEvents.DEER_STEP.get(), this.getSoundSource(), volume, this.getVoicePitch(), false);
+            } else if ("eat".equals(sound)) {
+                this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), NaturalistSoundEvents.DEER_EAT.get(), this.getSoundSource(), 0.5F, this.getVoicePitch(), false);
+            }
+        }
+    }
+
     @Override
     public void registerControllers(final AnimatableManager.@NotNull ControllerRegistrar controllers) {
         // data.setResetSpeedInTicks(10);
-        controllers.add(new AnimationController<>(this, "controller", 5, this::predicate));
-        controllers.add(new AnimationController<>(this, "eat_controller", 5, this::eatPredicate));
+        controllers.add(new AnimationController<>(this, "controller", 5, this::predicate).setSoundKeyframeHandler(this::soundListener));
+        controllers.add(new AnimationController<>(this, "eat_controller", 5, this::eatPredicate).setSoundKeyframeHandler(this::soundListener));
     }
 }

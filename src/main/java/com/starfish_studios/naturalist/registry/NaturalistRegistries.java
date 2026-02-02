@@ -1,6 +1,7 @@
 package com.starfish_studios.naturalist.registry;
 
 import com.starfish_studios.naturalist.item.CaughtMobWithVariantsItem;
+import com.starfish_studios.naturalist.item.NaturalistSpawnEggItem;
 import com.starfish_studios.naturalist.item.NoFluidMobBucketWithVariantsItem;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvent;
@@ -19,7 +20,6 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.material.Fluid;
-import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.NotNull;
@@ -47,7 +47,7 @@ public class NaturalistRegistries {
     }
 
     public static <T extends Mob> Supplier<SpawnEggItem> registerSpawnEggItem(String name, Supplier<EntityType<T>> entityType, int backgroundColor, int highlightColor) {
-        return ITEMS.register(name, () -> new DeferredSpawnEggItem(entityType, backgroundColor, highlightColor, new Item.Properties()));
+        return ITEMS.register(name, () -> new NaturalistSpawnEggItem(entityType, backgroundColor, highlightColor, new Item.Properties()));
     }
 
     public static Supplier<Item> registerNoFluidMobBucketItem(String name, Supplier<? extends EntityType<?>> entitySupplier, Supplier<? extends Fluid> fluidSupplier, @NotNull Supplier<? extends SoundEvent> soundSupplier) {

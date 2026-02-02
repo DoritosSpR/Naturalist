@@ -36,6 +36,8 @@ public class NaturalistSoundEvents {
     public static final Supplier<SoundEvent> BIRD_DEATH = NaturalistRegistries.registerSoundEvent("bird_death", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Naturalist.MOD_ID, "entity.bird.death")));
     public static final Supplier<SoundEvent> BIRD_EAT = NaturalistRegistries.registerSoundEvent("bird_eat", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Naturalist.MOD_ID, "entity.bird.eat")));
     public static final Supplier<SoundEvent> BIRD_FLY = NaturalistRegistries.registerSoundEvent("bird_fly", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Naturalist.MOD_ID, "entity.bird.fly")));
+    public static final Supplier<SoundEvent> BIRD_PECK = NaturalistRegistries.registerSoundEvent("bird_peck", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Naturalist.MOD_ID, "entity.bird.peck")));
+    public static final Supplier<SoundEvent> BIRD_STEP = NaturalistRegistries.registerSoundEvent("bird_step", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Naturalist.MOD_ID, "entity.bird.step")));
 
     // BIRDS
 
@@ -68,6 +70,8 @@ public class NaturalistSoundEvents {
     public static final Supplier<SoundEvent> DEER_AMBIENT_BABY = NaturalistRegistries.registerSoundEvent("deer_ambient_baby", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Naturalist.MOD_ID, "entity.deer.ambient_baby")));
     public static final Supplier<SoundEvent> DEER_HURT_BABY = NaturalistRegistries.registerSoundEvent("deer_hurt_baby", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Naturalist.MOD_ID, "entity.deer.hurt_baby")));
     public static final Supplier<SoundEvent> DEER_DEATH = NaturalistRegistries.registerSoundEvent("deer_death", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Naturalist.MOD_ID, "entity.deer.death")));
+    public static final Supplier<SoundEvent> DEER_STEP = NaturalistRegistries.registerSoundEvent("deer_step", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Naturalist.MOD_ID, "entity.deer.step")));
+    public static final Supplier<SoundEvent> DEER_EAT = NaturalistRegistries.registerSoundEvent("deer_eat", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Naturalist.MOD_ID, "entity.deer.eat")));
 
 
     // SAVANNA SOUNDS
@@ -121,6 +125,7 @@ public class NaturalistSoundEvents {
     public static final Supplier<SoundEvent> GIRAFFE_DEATH = NaturalistRegistries.registerSoundEvent("giraffe_death", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Naturalist.MOD_ID, "entity.giraffe.death")));
     public static final Supplier<SoundEvent> GIRAFFE_EAT = NaturalistRegistries.registerSoundEvent("giraffe_eat", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Naturalist.MOD_ID, "entity.giraffe.eat")));
     public static final Supplier<SoundEvent> GIRAFFE_MAD = NaturalistRegistries.registerSoundEvent("giraffe_mad", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Naturalist.MOD_ID, "entity.giraffe.mad")));
+    public static final Supplier<SoundEvent> GIRAFFE_STEP = NaturalistRegistries.registerSoundEvent("giraffe_step", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Naturalist.MOD_ID, "entity.giraffe.step")));
 
 
     // SWAMP SOUNDS

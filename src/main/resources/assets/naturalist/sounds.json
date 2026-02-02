@@ -362,15 +362,30 @@
   },
   "entity.bird.fly": {
     "sounds": [
-      "minecraft:mob/parrot/fly1",
-      "minecraft:mob/parrot/fly2",
-      "minecraft:mob/parrot/fly3",
-      "minecraft:mob/parrot/fly4",
-      "minecraft:mob/parrot/fly5",
-      "minecraft:mob/parrot/fly6",
-      "minecraft:mob/parrot/fly7"
+      "naturalist:mob/bird/fly1",
+      "naturalist:mob/bird/fly2",
+      "naturalist:mob/bird/fly3",
+      "naturalist:mob/bird/fly4"
     ],
     "subtitle": "naturalist.subtitles.entity.bird.fly"
+  },
+  "entity.bird.peck": {
+    "sounds": [
+      "naturalist:mob/bird/peck1",
+      "naturalist:mob/bird/peck2",
+      "naturalist:mob/bird/peck3"
+    ],
+    "subtitle": "naturalist.subtitles.entity.bird.eat"
+  },
+  "entity.bird.step": {
+    "sounds": [
+      "naturalist:mob/duck/step1",
+      "naturalist:mob/duck/step2",
+      "naturalist:mob/duck/step3",
+      "naturalist:mob/duck/step4",
+      "naturalist:mob/duck/step5"
+    ],
+    "subtitle": "subtitles.block.generic.footsteps"
   },
   "entity.bird.ambient_bluejay": {
     "sounds": [
@@ -563,6 +578,23 @@
       "naturalist:mob/deer/death2"
     ],
     "subtitle": "naturalist.subtitles.entity.deer.death"
+  },
+  "entity.deer.step": {
+    "sounds": [
+      "minecraft:mob/cow/step1",
+      "minecraft:mob/cow/step2",
+      "minecraft:mob/cow/step3",
+      "minecraft:mob/cow/step4"
+    ],
+    "subtitle": "subtitles.block.generic.footsteps"
+  },
+  "entity.deer.eat": {
+    "sounds": [
+      "naturalist:mob/deer/eat1",
+      "naturalist:mob/deer/eat2",
+      "naturalist:mob/deer/eat3"
+    ],
+    "subtitle": "naturalist.subtitles.entity.deer.eat"
   },
   "entity.zebra.ambient": {
     "sounds": [
@@ -1005,6 +1037,17 @@
       "naturalist:mob/giraffe/mad1"
     ],
     "subtitle": "naturalist.subtitles.entity.giraffe.mad"
+  },
+  "entity.giraffe.step": {
+    "sounds": [
+      "minecraft:mob/horse/soft1",
+      "minecraft:mob/horse/soft2",
+      "minecraft:mob/horse/soft3",
+      "minecraft:mob/horse/soft4",
+      "minecraft:mob/horse/soft5",
+      "minecraft:mob/horse/soft6"
+    ],
+    "subtitle": "subtitles.block.generic.footsteps"
   },
   "entity.zebra.death": {
     "sounds": [
