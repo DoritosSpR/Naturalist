@@ -53,8 +53,7 @@ import java.util.UUID;
 
 public class Elephant extends NaturalistAnimal implements NeutralMob, NaturalistGeoEntity {
     protected static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.sf_nba.elephant.idle");
-    protected static final RawAnimation WALK = RawAnimation.begin().thenLoop("animation.sf_nba.elephant.walk");
-    protected static final RawAnimation RUN = RawAnimation.begin().thenLoop("animation.sf_nba.elephant.run");
+    protected static final RawAnimation WALK = RawAnimation.begin().thenLoop("animation.sf_nba.elephant.walk2");
     private static final EntityDataAccessor<Boolean> DRINKING = SynchedEntityData.defineId(Elephant.class, EntityDataSerializers.BOOLEAN);
     private static final UniformInt PERSISTENT_ANGER_TIME = TimeUtil.rangeOfSeconds(20, 39);
     private static final EntityDataAccessor<Integer> REMAINING_ANGER_TIME = SynchedEntityData.defineId(Elephant.class, EntityDataSerializers.INT);
@@ -242,11 +241,7 @@ public class Elephant extends NaturalistAnimal implements NeutralMob, Naturalist
             event.setControllerSpeed(1.3f + event.getLimbSwingAmount());
         }
         if (event.isMoving()) {
-            if (this.isSprinting()) {
-                event.getController().setAnimation(RUN);
-            } else {
-                event.getController().setAnimation(WALK);
-            }
+            event.getController().setAnimation(WALK);
         } /*else if (this.isDrinking()) {
             event.getController().setAnimation(RawAnimation.begin().thenLoop("elephant.water"));
         }*/ else {
