@@ -32,11 +32,11 @@ public class FireflyGlowLayer extends GeoRenderLayer<Firefly> {
         int frame = 30 - Math.min(entity.getGlowTicksRemaining(), 30);
 
         RenderType overlayType = RenderType.entityTranslucent(GLOW_OVERLAY);
-        VertexConsumer overlayBuffer = new FireflyGlowUvConsumer(bufferSource.getBuffer(overlayType), frame);
+        VertexConsumer overlayBuffer = new FireflyGlowAnim(bufferSource.getBuffer(overlayType), frame);
         getRenderer().reRender(getDefaultBakedModel(entity), poseStack, bufferSource, entity, overlayType, overlayBuffer, partialTicks, packedLightIn, OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
 
         RenderType emissiveType = RenderType.entityTranslucentEmissive(GLOW_EMISSIVE);
-        VertexConsumer emissiveBuffer = new FireflyGlowUvConsumer(bufferSource.getBuffer(emissiveType), frame);
+        VertexConsumer emissiveBuffer = new FireflyGlowAnim(bufferSource.getBuffer(emissiveType), frame);
         getRenderer().reRender(getDefaultBakedModel(entity), poseStack, bufferSource, entity, emissiveType, emissiveBuffer, partialTicks, packedLightIn, OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
     }
 }
