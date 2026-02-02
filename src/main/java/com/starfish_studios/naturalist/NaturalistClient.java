@@ -1,6 +1,6 @@
 package com.starfish_studios.naturalist;
 
-import com.starfish_studios.naturalist.client.compat.LambDynamicLightsCompat;
+//import com.starfish_studios.naturalist.client.compat.LambDynamicLightsCompat;
 import com.starfish_studios.naturalist.client.model.ZebraModel;
 import com.starfish_studios.naturalist.client.renderer.*;
 import com.starfish_studios.naturalist.registry.NaturalistEntityTypes;
@@ -25,7 +25,7 @@ public class NaturalistClient {
     @SubscribeEvent
     public static void init(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
-            LambDynamicLightsCompat.registerIfPresent();
+//            LambDynamicLightsCompat.registerIfPresent();
             ItemBlockRenderTypes.setRenderLayer(NaturalistRegistry.CHRYSALIS_BLOCK.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(NaturalistRegistry.AZURE_FROGLASS.get(), RenderType.translucent());
             ItemBlockRenderTypes.setRenderLayer(NaturalistRegistry.AZURE_FROGLASS_PANE.get(), RenderType.translucent());
