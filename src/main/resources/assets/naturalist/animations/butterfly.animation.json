@@ -1,6 +1,18 @@
 {
   "format_version": "1.8.0",
   "animations": {
+    "animation.sf_nba.butterfly.idle": {
+      "loop": true,
+      "animation_length": 1,
+      "bones": {
+        "body": {
+          "rotation": { "0.0": [0, 0, 0] },
+          "position": { "0.0": [0, -0.19, 0] }
+        },
+        "rightWing": { "rotation": { "0.0": [8.21, 0, 0] } },
+        "leftWing": { "rotation": { "0.0": [8.21, 0, 0] } }
+      }
+    },
     "animation.sf_nba.butterfly.tilt": {
       "loop": true,
       "bones": {

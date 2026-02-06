@@ -6,13 +6,11 @@ import com.starfish_studios.naturalist.entity.core.NaturalistGeoEntity;
 import com.starfish_studios.naturalist.entity.core.ai.goal.FlyingWanderGoal;
 import com.starfish_studios.naturalist.entity.core.Catchable;
 import com.starfish_studios.naturalist.entity.core.ai.navigation.SmartBodyHelper;
-import com.starfish_studios.naturalist.registry.NaturalistEntityTypes;
 import com.starfish_studios.naturalist.registry.NaturalistRegistry;
 import com.starfish_studios.naturalist.registry.NaturalistTags;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -32,21 +30,24 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
-import net.minecraft.world.entity.ai.goal.*;
-import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.animal.FlyingAnimal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.DoublePlantBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -63,15 +64,14 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 public class Butterfly extends NaturalistAnimal implements NaturalistGeoEntity, FlyingAnimal, Catchable {
-    protected static final RawAnimation FLY = RawAnimation.begin().thenLoop("animation.sf_nba.butterfly.fly");
+    private static final RawAnimation FLY = RawAnimation.begin().thenLoop("animation.sf_nba.butterfly.fly");
+    private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.sf_nba.butterfly.idle");
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final EntityDataAccessor<Boolean> HAS_NECTAR = SynchedEntityData.defineId(Butterfly.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> DATA_VARIANT = SynchedEntityData.defineId(Butterfly.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> HAS_NECTAR = SynchedEntityData.defineId(Butterfly.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> POLLINATING = SynchedEntityData.defineId(Butterfly.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> FROM_HAND = SynchedEntityData.defineId(Butterfly.class, EntityDataSerializers.BOOLEAN);
-    // region VARIABLES
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
-    private int numCropsGrownSincePollination;
-    // endregion
 
     public Butterfly(@NotNull EntityType<? extends NaturalistAnimal> entityType, Level level) {
         super(entityType, level);
@@ -99,13 +99,9 @@ public class Butterfly extends NaturalistAnimal implements NaturalistGeoEntity, 
 
     @Override
     protected void registerGoals() {
-        this.goalSelector.addGoal(1, new BreedGoal(this, 1.0D));
-        this.goalSelector.addGoal(2, new TemptGoal(this, 1.25D, Ingredient.of(ItemTags.FLOWERS), false));
-        this.goalSelector.addGoal(3, new FollowParentGoal(this, 1.25D));
-        this.goalSelector.addGoal(4, new ButterflyGrowCropGoal(this, 1.0D, 16, 4));
-        this.goalSelector.addGoal(5, new ButterflyPollinateGoal(this, 1.0D, 16, 4));
-        this.goalSelector.addGoal(6, new FlyingWanderGoal(this));
-        this.goalSelector.addGoal(7, new FloatGoal(this));
+        this.goalSelector.addGoal(1, new FloatGoal(this));
+        this.goalSelector.addGoal(2, new ButterflyPollinateGoal(this, 1.0D, 8, 4));
+        this.goalSelector.addGoal(3, new FlyingWanderGoal(this));
     }
 
     @Override
@@ -131,25 +127,30 @@ public class Butterfly extends NaturalistAnimal implements NaturalistGeoEntity, 
     @Override
     protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
         super.defineSynchedData(builder);
-        builder.define(DATA_VARIANT, 1);
-        builder.define(FROM_HAND, false);
+        builder.define(DATA_VARIANT, 0);
         builder.define(HAS_NECTAR, false);
+        builder.define(POLLINATING, false);
+        builder.define(FROM_HAND, false);
     }
 
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putInt("Variant", getVariant().getId());
+        compound.putBoolean("HasNectar", this.hasNectar());
         compound.putBoolean("FromHand", this.fromHand());
     }
 
     public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.setVariant(Butterfly.Variant.BY_ID[compound.getInt("Variant")]);
-        this.setFromHand(compound.getBoolean("FromHand"));
+        this.setVariant(Butterfly.Variant.getTypeById(compound.getInt("Variant")));
+        this.setHasNectar(compound.getBoolean("HasNectar"));
+        if (compound.contains("FromHand")) {
+            this.setFromHand(compound.getBoolean("FromHand"));
+        }
     }
 
     public Butterfly.Variant getVariant() {
-        return Butterfly.Variant.BY_ID[this.entityData.get(DATA_VARIANT)];
+        return Butterfly.Variant.getTypeById(this.entityData.get(DATA_VARIANT));
     }
 
     public void setVariant(Butterfly.@NotNull Variant variant) {
@@ -172,16 +173,12 @@ public class Butterfly extends NaturalistAnimal implements NaturalistGeoEntity, 
         this.entityData.set(HAS_NECTAR, hasNectar);
     }
 
-    int getCropsGrownSincePollination() {
-        return this.numCropsGrownSincePollination;
+    public boolean isPollinating() {
+        return this.entityData.get(POLLINATING);
     }
 
-    private void resetNumCropsGrownSincePollination() {
-        this.numCropsGrownSincePollination = 0;
-    }
-
-    void incrementNumCropsGrownSincePollination() {
-        ++this.numCropsGrownSincePollination;
+    void setPollinating(boolean pollinating) {
+        this.entityData.set(POLLINATING, pollinating);
     }
 
     public void saveToHandTag(@NotNull ItemStack stack) {
@@ -194,21 +191,13 @@ public class Butterfly extends NaturalistAnimal implements NaturalistGeoEntity, 
 
     public void loadFromHandTag(@NotNull CompoundTag tag) {
         Catchable.loadDefaultDataFromHandTag(this, tag);
-        int i = tag.getInt("Variant");
-        if (i >= 0 && i < Butterfly.Variant.BY_ID.length) {
-            this.setVariant(Butterfly.Variant.BY_ID[i]);
-        } else {
-            LOGGER.error("Invalid variant: {}", i);
-        }
-
+        this.setVariant(Butterfly.Variant.getTypeById(tag.getInt("Variant")));
         if (tag.contains("Age")) {
             this.setAge(tag.getInt("Age"));
         }
-
-        if (tag.contains("HuntingCooldown")) {
-            this.getBrain().setMemoryWithExpiry(MemoryModuleType.HAS_HUNTING_COOLDOWN, true, tag.getLong("HuntingCooldown"));
+        if (tag.contains("FromHand")) {
+            this.setFromHand(tag.getBoolean("FromHand"));
         }
-
     }
 
     @Override
@@ -230,16 +219,10 @@ public class Butterfly extends NaturalistAnimal implements NaturalistGeoEntity, 
     public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor level, @NotNull DifficultyInstance difficulty, @NotNull MobSpawnType reason, @Nullable SpawnGroupData spawnData) {
         if (reason == MobSpawnType.BUCKET) {
             return spawnData;
-        } else {
-            RandomSource randomSource = level.getRandom();
-            {
-                spawnData = new Butterfly.ButterflyGroupData(Variant.getCommonSpawnVariant(randomSource), Variant.getCommonSpawnVariant(randomSource));
-            }
-
-            this.setVariant(((Butterfly.ButterflyGroupData) spawnData).getVariant(randomSource));
-
-            return super.finalizeSpawn(level, difficulty, reason, spawnData);
         }
+        RandomSource random = level.getRandom();
+        this.setVariant(Variant.getRandom(random));
+        return super.finalizeSpawn(level, difficulty, reason, spawnData);
     }
 
     // endregion
@@ -276,30 +259,17 @@ public class Butterfly extends NaturalistAnimal implements NaturalistGeoEntity, 
     @Override
     public void aiStep() {
         super.aiStep();
-        if (this.getCropsGrownSincePollination() >= 10) {
-            this.resetNumCropsGrownSincePollination();
-            this.setHasNectar(false);
+        if (!this.onGround() && this.getNavigation().isDone() && !this.isPollinating()) {
+            Vec3 motion = this.getDeltaMovement();
+            this.setDeltaMovement(motion.x, Math.max(motion.y, -0.05D), motion.z);
+            this.fallDistance = 0.0F;
         }
-    }
-
-    @Override
-    public void tick() {
-        super.tick();
-        if (this.hasNectar() && this.getCropsGrownSincePollination() < 10 && this.random.nextFloat() < 0.05F) {
-            for (int i = 0; i < this.random.nextInt(2) + 1; ++i) {
-                this.spawnFluidParticle(this.level(), this.getX() - 0.3F, this.getX() + 0.3F, this.getZ() - 0.3F, this.getZ() + 0.3F, this.getY(0.5D));
-            }
-        }
-    }
-
-    private void spawnFluidParticle(@NotNull Level level, double x1, double x2, double z1, double z2, double y) {
-        level.addParticle(ParticleTypes.FALLING_NECTAR, Mth.lerp(level.random.nextDouble(), x1, x2), y, Mth.lerp(level.random.nextDouble(), z1, z2), 0.0D, 0.0D, 0.0D);
     }
 
     @Nullable
     @Override
     public AgeableMob getBreedOffspring(@NotNull ServerLevel level, @NotNull AgeableMob mob) {
-        return NaturalistEntityTypes.CATERPILLAR.get().create(level);
+        return null;
     }
 
     @Override
@@ -320,6 +290,24 @@ public class Butterfly extends NaturalistAnimal implements NaturalistGeoEntity, 
     protected void playStepSound(@NotNull BlockPos pos, @NotNull BlockState state) {
     }
 
+    @Override
+    protected void dropCustomDeathLoot(@NotNull DamageSource source, int lootingMultiplier, boolean hitByPlayer) {
+        super.dropCustomDeathLoot(source, lootingMultiplier, hitByPlayer);
+        this.spawnAtLocation(this.getVariantDye());
+    }
+
+    private ItemStack getVariantDye() {
+        return switch (this.getVariant()) {
+            case MONARCH -> new ItemStack(Items.ORANGE_DYE);
+            case CLOUDED_YELLOW -> new ItemStack(Items.YELLOW_DYE);
+            case BLUE_MORPHO -> new ItemStack(Items.BLUE_DYE);
+            case GREEN_SWALLOWTAIL -> new ItemStack(Items.GREEN_DYE);
+            case JADE_GREEN_SWALLOWTAIL -> new ItemStack(Items.CYAN_DYE);
+            case PURPLE_EMPEROR -> new ItemStack(Items.PURPLE_DYE);
+            case RED_ADMIRAL -> new ItemStack(Items.RED_DYE);
+        };
+    }
+
     // endregion
 
     // region GECKOLIB
@@ -330,7 +318,17 @@ public class Butterfly extends NaturalistAnimal implements NaturalistGeoEntity, 
     }
 
     protected <E extends Butterfly> PlayState predicate(final AnimationState<E> event) {
-        event.getController().setAnimation(FLY);
+        if (this.isPollinating()) {
+            event.getController().setAnimation(IDLE);
+            event.getController().setAnimationSpeed(1.0F);
+        } else if (!this.onGround() && !this.isPollinating()) {
+            event.getController().setAnimation(FLY);
+            double vy = this.getDeltaMovement().y;
+            double targetSpeed = Mth.clamp(1.0D + vy * 2.0D, 0.8D, 1.2D);
+            double currentSpeed = event.getController().getAnimationSpeed();
+            double lerpedSpeed = Mth.lerp(0.2F, currentSpeed, targetSpeed);
+            event.getController().setAnimationSpeed(lerpedSpeed);
+        }
         return PlayState.CONTINUE;
     }
 
@@ -344,37 +342,21 @@ public class Butterfly extends NaturalistAnimal implements NaturalistGeoEntity, 
     // region VARIANTS
 
     public enum Variant {
-        CABBAGE_WHITE(0, "cabbage_white", true),
-        MONARCH(1, "monarch", true),
-        CLOUDED_YELLOW(2, "clouded_yellow", true),
-        SWALLOWTAIL(3, "swallowtail", true),
-        BLUE_MORPHO(4, "blue_morpho", true);
+        MONARCH(0, "monarch"),
+        CLOUDED_YELLOW(1, "clouded_yellow"),
+        BLUE_MORPHO(2, "blue_morpho"),
+        GREEN_SWALLOWTAIL(3, "green_swallowtail"),
+        JADE_GREEN_SWALLOWTAIL(4, "jade_green_swallowtail"),
+        PURPLE_EMPEROR(5, "purple_emperor"),
+        RED_ADMIRAL(6, "red_admiral");
 
         public static final Butterfly.Variant[] BY_ID = Arrays.stream(values()).sorted(Comparator.comparingInt(Variant::getId)).toArray(Variant[]::new);
         private final int id;
         private final String name;
-        private final boolean common;
 
-        Variant(int j, String string2, boolean bl) {
-            this.id = j;
-            this.name = string2;
-            this.common = bl;
-        }
-
-        public static @NotNull Variant getTypeById(int id) {
-            for (Variant type : values()) {
-                if (type.id == id) return type;
-            }
-            return Variant.MONARCH;
-        }
-
-        public static Butterfly.@NotNull Variant getCommonSpawnVariant(RandomSource random) {
-            return getSpawnVariant(random);
-        }
-
-        private static Butterfly.@NotNull Variant getSpawnVariant(RandomSource random) {
-            Butterfly.Variant[] variants = Arrays.stream(BY_ID).filter((variant) -> variant.common).toArray(Variant[]::new);
-            return Util.getRandom(variants, random);
+        Variant(int id, String name) {
+            this.id = id;
+            this.name = name;
         }
 
         public int getId() {
@@ -384,18 +366,16 @@ public class Butterfly extends NaturalistAnimal implements NaturalistGeoEntity, 
         public String getName() {
             return this.name;
         }
-    }
 
-    public static class ButterflyGroupData extends AgeableMob.AgeableMobGroupData {
-        public final Butterfly.Variant[] types;
-
-        public ButterflyGroupData(Butterfly.Variant... variants) {
-            super(false);
-            this.types = variants;
+        public static @NotNull Variant getTypeById(int id) {
+            if (id >= 0 && id < BY_ID.length) {
+                return BY_ID[id];
+            }
+            return MONARCH;
         }
 
-        public Butterfly.Variant getVariant(RandomSource random) {
-            return this.types[random.nextInt(this.types.length)];
+        public static Butterfly.@NotNull Variant getRandom(RandomSource random) {
+            return Util.getRandom(BY_ID, random);
         }
     }
 
@@ -403,99 +383,90 @@ public class Butterfly extends NaturalistAnimal implements NaturalistGeoEntity, 
 
     static class ButterflyPollinateGoal extends MoveToBlockGoal {
         private final Butterfly butterfly;
-        protected int ticksWaited;
+        private boolean atFlower;
+        private int pollinateTime;
 
-        public ButterflyPollinateGoal(@NotNull Butterfly mob, double speedModifier, int searchRange, int verticalSearchRange) {
-            super(mob, speedModifier, searchRange, verticalSearchRange);
-            this.butterfly = mob;
+        public ButterflyPollinateGoal(@NotNull Butterfly butterfly, double speedModifier, int searchRange, int verticalRange) {
+            super(butterfly, speedModifier, searchRange, verticalRange);
+            this.butterfly = butterfly;
         }
 
         @Override
         protected boolean isValidTarget(LevelReader level, @NotNull BlockPos pos) {
-            return level.getBlockState(pos).is(BlockTags.FLOWERS);
+            return level.getBlockState(pos).is(BlockTags.FLOWERS) && !isFlowerOccupied(level, pos);
         }
 
         @Override
-        public void tick() {
-            super.tick();
-            if (this.isReachedTarget()) {
-                if (this.ticksWaited >= 40) {
-                    this.onReachedTarget();
-                } else {
-                    ++this.ticksWaited;
-                }
-            }
-        }
-
-        protected void onReachedTarget() {
-            BlockState state = butterfly.level().getBlockState(blockPos);
-            if (state.is(BlockTags.FLOWERS)) {
-                butterfly.setHasNectar(true);
-                this.stop();
-            }
-        }
-
-        @Override
-        public boolean canUse() {
-            return !butterfly.hasNectar() && super.canUse();
-        }
-
-        @Override
-        public boolean canContinueToUse() {
-            return !butterfly.hasNectar() && super.canContinueToUse();
+        public double acceptedDistance() {
+            return 1.0D;
         }
 
         @Override
         public void start() {
             super.start();
-            this.ticksWaited = 0;
-        }
-    }
-
-    static class ButterflyGrowCropGoal extends MoveToBlockGoal {
-        private final Butterfly butterfly;
-
-        public ButterflyGrowCropGoal(Butterfly mob, double speedModifier, int searchRange, int verticalSearchRange) {
-            super(mob, speedModifier, searchRange, verticalSearchRange);
-            this.butterfly = mob;
+            this.pollinateTime = 40 + this.butterfly.getRandom().nextInt(40);
+            this.atFlower = false;
+            this.butterfly.setPollinating(false);
+            this.butterfly.setNoGravity(false);
         }
 
         @Override
-        protected boolean isValidTarget(LevelReader level, @NotNull BlockPos pos) {
-            BlockState state = level.getBlockState(pos);
-            return state.getBlock() instanceof CropBlock cropBlock && cropBlock.getAge(state) < cropBlock.getMaxAge();
+        public void stop() {
+            super.stop();
+            this.butterfly.setPollinating(false);
+            this.butterfly.setNoGravity(false);
+            this.butterfly.getNavigation().stop();
+            this.atFlower = false;
         }
 
+        @Override
         public void tick() {
-            BlockPos blockpos = this.getMoveToTarget();
-            if (!blockpos.closerToCenterThan(this.mob.position(), this.acceptedDistance())) {
-                ++this.tryTicks;
-                if (this.shouldRecalculatePath()) {
-                    this.mob.getNavigation().moveTo((double) ((float) blockpos.getX()) + 0.5D, blockpos.getY(), (double) ((float) blockpos.getZ()) + 0.5D, this.speedModifier);
+            Level level = this.butterfly.level();
+            BlockPos targetPos = resolveTargetPos(level, this.blockPos);
+            BlockState state = level.getBlockState(targetPos);
+            if (!state.is(BlockTags.FLOWERS) || isFlowerOccupied(level, targetPos)) {
+                this.stop();
+                return;
+            }
+
+            double shapeTop = state.getShape(level, targetPos).max(net.minecraft.core.Direction.Axis.Y);
+            Vec3 target = new Vec3(targetPos.getX() + 0.5D, targetPos.getY() + shapeTop + 0.01D, targetPos.getZ() + 0.5D);
+
+            if (!this.atFlower) {
+                this.mob.getNavigation().moveTo(target.x, target.y + 0.2D, target.z, this.speedModifier);
+                if (this.mob.position().closerThan(target, this.acceptedDistance() + 0.1D)) {
+                    this.atFlower = true;
+                    this.butterfly.setPollinating(true);
+                    this.butterfly.setNoGravity(true);
+                    this.butterfly.getNavigation().stop();
+                    this.butterfly.setDeltaMovement(Vec3.ZERO);
                 }
             } else {
-                this.onReachedTarget();
-            }
-
-        }
-
-        protected void onReachedTarget() {
-            BlockState state = butterfly.level().getBlockState(blockPos);
-            if (state.getBlock() instanceof CropBlock cropBlock) {
-                cropBlock.growCrops(butterfly.level(), blockPos, state);
-                butterfly.incrementNumCropsGrownSincePollination();
-                this.stop();
+                this.butterfly.setPos(target.x, target.y, target.z);
+                this.butterfly.setDeltaMovement(Vec3.ZERO);
+                if (--this.pollinateTime <= 0) {
+                    this.butterfly.setHasNectar(true);
+                    this.stop();
+                }
             }
         }
 
-        @Override
-        public boolean canUse() {
-            return butterfly.hasNectar() && super.canUse();
+        private BlockPos resolveTargetPos(Level level, BlockPos pos) {
+            BlockState state = level.getBlockState(pos);
+            if (state.getBlock() instanceof DoublePlantBlock && state.getValue(DoublePlantBlock.HALF) == DoubleBlockHalf.LOWER) {
+                BlockPos above = pos.above();
+                BlockState aboveState = level.getBlockState(above);
+                if (aboveState.getBlock() instanceof DoublePlantBlock) {
+                    return above;
+                }
+            }
+            return pos;
         }
 
-        @Override
-        public boolean canContinueToUse() {
-            return butterfly.hasNectar() && super.canContinueToUse();
+        private boolean isFlowerOccupied(LevelReader level, BlockPos pos) {
+            if (!(level instanceof Level world)) return false;
+            AABB box = new AABB(pos).inflate(0.2D);
+            return !world.getEntitiesOfClass(Butterfly.class, box, b -> b != this.butterfly && b.isPollinating() && b.blockPosition().equals(pos)).isEmpty();
         }
     }
 }

@@ -43,7 +43,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.level.pathfinder.Path;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -331,12 +330,20 @@ public class Snake extends ClimbingAnimal implements SleepingAnimal, NeutralMob,
 
     private boolean canRattle() {
         List<Player> players = this.level().getNearbyPlayers(TargetingConditions.forNonCombat().range(4.0D), this, this.getBoundingBox().inflate(4.0D, 2.0D, 4.0D));
-        if (!players.isEmpty() && this.getType().equals(NaturalistEntityTypes.RATTLESNAKE.get()) && !players.getFirst().isCreative()) {
-            this.setTarget(players.getFirst());
-        } else {
+        boolean isRattlesnake = this.getType().equals(NaturalistEntityTypes.RATTLESNAKE.get());
+        if (!isRattlesnake) return false;
+
+        if (!players.isEmpty() && !players.getFirst().isCreative()) {
+            if (this.getTarget() == null || this.getTarget() instanceof Player) {
+                this.setTarget(players.getFirst());
+            }
+            return true;
+        }
+
+        if (this.getTarget() instanceof Player) {
             this.setTarget(null);
         }
-        return !players.isEmpty() && this.getType().equals(NaturalistEntityTypes.RATTLESNAKE.get());
+        return false;
     }
 
     @Override
@@ -374,7 +381,7 @@ public class Snake extends ClimbingAnimal implements SleepingAnimal, NeutralMob,
         if (this.isSleeping()) {
             event.getController().setAnimation(SLEEP);
             return PlayState.CONTINUE;
-        } else if (this.isClimbing()) {
+        } else if (this.isNaturalistClimbing()) {
             event.getController().setAnimation(CLIMB);
             return PlayState.CONTINUE;
         } else if (!(event.getLimbSwingAmount() > -0.04F && event.getLimbSwingAmount() < 0.04F)) {
@@ -440,37 +447,13 @@ public class Snake extends ClimbingAnimal implements SleepingAnimal, NeutralMob,
 
     static class SnakeMeleeAttackGoal extends MeleeAttackGoal {
 
-        private long lastCanUseCheck;
-
         public SnakeMeleeAttackGoal(@NotNull PathfinderMob mob, double speedModifier, boolean followingTargetEvenIfNotSeen) {
             super(mob, speedModifier, followingTargetEvenIfNotSeen);
         }
 
         @Override
         public boolean canUse() {
-            return mob.getMainHandItem().isEmpty() && testUse();
-        }
-
-        boolean testUse() {
-            long l = this.mob.level().getGameTime();
-            if (l - this.lastCanUseCheck < 20L) {
-                return false;
-            } else {
-                this.lastCanUseCheck = l;
-                LivingEntity livingEntity = this.mob.getTarget();
-                if (livingEntity == null) {
-                    return false;
-                } else if (!livingEntity.isAlive()) {
-                    return false;
-                } else {
-                    Path path = this.mob.getNavigation().createPath(livingEntity, 0);
-                    if (path != null) {
-                        return true;
-                    } else {
-                        return this.getAttackReachSqr(livingEntity) >= this.mob.distanceToSqr(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
-                    }
-                }
-            }
+            return mob.getMainHandItem().isEmpty() && super.canUse();
         }
 
         @Override

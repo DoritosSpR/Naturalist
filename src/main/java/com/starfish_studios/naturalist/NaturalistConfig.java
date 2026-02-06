@@ -222,6 +222,8 @@ public class NaturalistConfig extends MidnightConfig {
     public static int hippoSpawnMaxGroupSize = 3;
 
     @Entry(category = "mobConfig")
+    public static boolean lionsAttackBabyHostiles = false;
+    @Entry(category = "mobConfig")
     public static int lionSpawnWeight = 3;
     @Entry(category = "mobConfig", isSlider = true, min = 1, max = 8)
     public static int lionSpawnMinGroupSize = 1;

@@ -62,7 +62,7 @@ public class SnailModel extends GeoModel<Snail> {
             }
         }
 
-        if (!animatable.isClimbing() || !animatable.canHide()) {
+        if (!animatable.isNaturalistClimbing() || !animatable.canHide()) {
             if (leftEye != null) {
                 assert extraDataOfType != null;
                 leftEye.setRotX(extraDataOfType.headPitch() * Mth.DEG_TO_RAD);
