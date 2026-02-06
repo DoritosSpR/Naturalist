@@ -14,6 +14,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -88,7 +89,7 @@ public interface Catchable {
             ItemStack caughtItemStack = entity.getCaughtItemStack();
             entity.saveToHandTag(caughtItemStack);
             if (needsNet) {
-                itemStack.hurtAndBreak(1, player, net.minecraft.world.entity.EquipmentSlot.MAINHAND);
+                itemStack.hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
             }
             if (player.getInventory().add(caughtItemStack)) {
                 entity.discard();

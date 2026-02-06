@@ -13,6 +13,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnPlacementTypes;
+import net.minecraft.world.entity.animal.AbstractFish;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
@@ -165,7 +166,7 @@ public class Naturalist {
         event.put(NaturalistEntityTypes.DRAGONFLY.get(), Dragonfly.createAttributes().build());
         event.put(NaturalistEntityTypes.CATFISH.get(), Catfish.createAttributes().build());
         event.put(NaturalistEntityTypes.ALLIGATOR.get(), Alligator.createAttributes().build());
-        event.put(NaturalistEntityTypes.BASS.get(), net.minecraft.world.entity.animal.AbstractFish.createAttributes().build());
+        event.put(NaturalistEntityTypes.BASS.get(), AbstractFish.createAttributes().build());
         event.put(NaturalistEntityTypes.LIZARD.get(), Lizard.createAttributes().build());
         event.put(NaturalistEntityTypes.LIZARD_TAIL.get(), LizardTail.createAttributes().build());
         event.put(NaturalistEntityTypes.MOOSE.get(), Moose.createAttributes().build());

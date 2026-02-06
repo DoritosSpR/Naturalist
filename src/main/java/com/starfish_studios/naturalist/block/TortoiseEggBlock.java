@@ -5,6 +5,8 @@ import com.starfish_studios.naturalist.registry.NaturalistEntityTypes;
 import com.starfish_studios.naturalist.registry.NaturalistSoundEvents;
 import com.starfish_studios.naturalist.registry.NaturalistTags;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -14,6 +16,7 @@ import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -49,9 +52,9 @@ public class TortoiseEggBlock extends TurtleEggBlock {
     @Override
     public @NotNull ItemStack getCloneItemStack(@NotNull LevelReader level, @NotNull BlockPos pos, @NotNull BlockState state) {
         ItemStack stack = super.getCloneItemStack(level, pos, state);
-        net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
+        CompoundTag tag = new CompoundTag();
         tag.putInt("Variant", state.getValue(VARIANT));
-        stack.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(tag));
+        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
         return stack;
     }
 

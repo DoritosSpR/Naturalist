@@ -10,6 +10,7 @@ import com.starfish_studios.naturalist.registry.NaturalistEntityTypes;
 import com.starfish_studios.naturalist.registry.NaturalistSoundEvents;
 import com.starfish_studios.naturalist.registry.NaturalistTags;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -188,7 +189,7 @@ public class Rhino extends NaturalistAnimal implements NaturalistGeoEntity {
             double e = this.getY() + (double) this.getBbHeight() - 0.3;
             double f = this.getZ() + (double) this.getBbWidth() * Math.cos(this.yBodyRot * ((float) Math.PI / 180)) + (this.random.nextDouble() * 0.6 - 0.3);
             int color = (127 << 16) | (131 << 8) | 146;
-            this.level().addParticle(net.minecraft.core.particles.ColorParticleOption.create(net.minecraft.core.particles.ParticleTypes.ENTITY_EFFECT, color), d, e, f, 0, 0, 0);
+            this.level().addParticle(ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, color), d, e, f, 0, 0, 0);
         }
     }
 

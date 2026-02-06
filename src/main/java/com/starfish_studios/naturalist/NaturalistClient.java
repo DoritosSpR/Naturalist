@@ -5,6 +5,7 @@ import com.starfish_studios.naturalist.client.model.ZebraModel;
 import com.starfish_studios.naturalist.client.renderer.*;
 import com.starfish_studios.naturalist.registry.NaturalistEntityTypes;
 import com.starfish_studios.naturalist.registry.NaturalistRegistry;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderers;
@@ -70,8 +71,8 @@ public class NaturalistClient {
             EntityRenderers.register(NaturalistEntityTypes.DUCK_EGG.get(), ThrownItemRenderer::new);
 
             ItemProperties.register(NaturalistRegistry.BUTTERFLY.get(), ResourceLocation.fromNamespaceAndPath(Naturalist.MOD_ID, "variant"), (stack, world, entity, num) -> {
-                if (stack.has(net.minecraft.core.component.DataComponents.CUSTOM_DATA)) {
-                    var customData = stack.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+                if (stack.has(DataComponents.CUSTOM_DATA)) {
+                    var customData = stack.get(DataComponents.CUSTOM_DATA);
                     if (customData != null && customData.contains("Variant")) {
                         return (float) customData.copyTag().getInt("Variant") / 5;
                     }
@@ -80,8 +81,8 @@ public class NaturalistClient {
             });
 
             ItemProperties.register(NaturalistRegistry.SNAIL_BUCKET.get(), ResourceLocation.fromNamespaceAndPath(Naturalist.MOD_ID, "color"), (stack, world, entity, num) -> {
-                if (stack.has(net.minecraft.core.component.DataComponents.CUSTOM_DATA)) {
-                    var customData = stack.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+                if (stack.has(DataComponents.CUSTOM_DATA)) {
+                    var customData = stack.get(DataComponents.CUSTOM_DATA);
                     if (customData != null && customData.contains("Color")) {
                         return (float) customData.copyTag().getInt("Color") / 15;
                     }
