@@ -44,39 +44,39 @@ public class ChrysalisBlock extends HorizontalDirectionalBlock {
     }
 
     @Override
-    public boolean isRandomlyTicking(@NotNull BlockState pState) {
+    public boolean isRandomlyTicking(@NotNull BlockState state) {
         return true;
     }
 
     @Override
-    public void randomTick(@NotNull BlockState pState, @NotNull ServerLevel pLevel, @NotNull BlockPos pPos, @NotNull RandomSource pRandom) {
-        int age = pState.getValue(AGE);
+    public void randomTick(@NotNull BlockState state, @NotNull ServerLevel level, @NotNull BlockPos pos, @NotNull RandomSource random) {
+        int age = state.getValue(AGE);
         if (age < 3) {
-            if (pLevel.random.nextInt(5) == 0) {
-                pLevel.setBlock(pPos, pState.setValue(AGE, age + 1), 2);
+            if (level.random.nextInt(5) == 0) {
+                level.setBlock(pos, state.setValue(AGE, age + 1), 2);
             }
         } else {
-            pLevel.removeBlock(pPos, false);
-            pLevel.playSound(null, pPos, SoundEvents.WOOD_BREAK, SoundSource.BLOCKS, 0.7F, 0.9F + pRandom.nextFloat() * 0.2F);
-            pLevel.levelEvent(2001, pPos, Block.getId(pState));
-            Butterfly butterfly = NaturalistEntityTypes.BUTTERFLY.get().create(pLevel);
+            level.removeBlock(pos, false);
+            level.playSound(null, pos, SoundEvents.WOOD_BREAK, SoundSource.BLOCKS, 0.7F, 0.9F + random.nextFloat() * 0.2F);
+            level.levelEvent(2001, pos, Block.getId(state));
+            Butterfly butterfly = NaturalistEntityTypes.BUTTERFLY.get().create(level);
             assert butterfly != null;
-            butterfly.setVariant(Butterfly.Variant.getTypeById(pRandom.nextInt(Butterfly.Variant.values().length)));
-            butterfly.moveTo(pPos.getX() + 0.5D, pPos.getY() + 0.5D, pPos.getZ() + 0.5D, 0.0F, 0.0F);
-            pLevel.addFreshEntity(butterfly);
+            butterfly.setVariant(Butterfly.Variant.getTypeById(random.nextInt(Butterfly.Variant.values().length)));
+            butterfly.moveTo(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, 0.0F, 0.0F);
+            level.addFreshEntity(butterfly);
         }
     }
 
     @Override
-    public boolean canSurvive(BlockState pState, @NotNull LevelReader pLevel, @NotNull BlockPos pPos) {
-        BlockState facingState = pLevel.getBlockState(pPos.relative(pState.getValue(FACING)));
+    public boolean canSurvive(BlockState state, @NotNull LevelReader level, @NotNull BlockPos pos) {
+        BlockState facingState = level.getBlockState(pos.relative(state.getValue(FACING)));
         return facingState.is(BlockTags.LOGS);
     }
 
     @Override
-    public @NotNull VoxelShape getShape(@NotNull BlockState pState, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos, @NotNull CollisionContext pContext) {
-        int age = pState.getValue(AGE);
-        return switch (pState.getValue(FACING)) {
+    public @NotNull VoxelShape getShape(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull CollisionContext context) {
+        int age = state.getValue(AGE);
+        return switch (state.getValue(FACING)) {
             case SOUTH -> SOUTH_AABB[age];
             case WEST -> WEST_AABB[age];
             case EAST -> EAST_AABB[age];
@@ -86,12 +86,12 @@ public class ChrysalisBlock extends HorizontalDirectionalBlock {
 
     @Nullable
     @Override
-    public BlockState getStateForPlacement(@NotNull BlockPlaceContext pContext) {
+    public BlockState getStateForPlacement(@NotNull BlockPlaceContext context) {
         BlockState state = this.defaultBlockState();
-        LevelReader level = pContext.getLevel();
-        BlockPos pos = pContext.getClickedPos();
+        LevelReader level = context.getLevel();
+        BlockPos pos = context.getClickedPos();
 
-        for (Direction direction : pContext.getNearestLookingDirections()) {
+        for (Direction direction : context.getNearestLookingDirections()) {
             if (direction.getAxis().isHorizontal()) {
                 state = state.setValue(FACING, direction);
                 if (state.canSurvive(level, pos)) {
@@ -104,13 +104,13 @@ public class ChrysalisBlock extends HorizontalDirectionalBlock {
     }
 
     @Override
-    public @NotNull BlockState updateShape(BlockState pState, @NotNull Direction pFacing, @NotNull BlockState pFacingState, @NotNull LevelAccessor pLevel,
-                                           @NotNull BlockPos pCurrentPos, @NotNull BlockPos pFacingPos) {
-        return pFacing == pState.getValue(FACING) && !pState.canSurvive(pLevel, pCurrentPos) ? Blocks.AIR.defaultBlockState() : super.updateShape(pState, pFacing, pFacingState, pLevel, pCurrentPos, pFacingPos);
+    public @NotNull BlockState updateShape(BlockState state, @NotNull Direction facing, @NotNull BlockState facingState, @NotNull LevelAccessor level,
+                                           @NotNull BlockPos currentPos, @NotNull BlockPos facingPos) {
+        return facing == state.getValue(FACING) && !state.canSurvive(level, currentPos) ? Blocks.AIR.defaultBlockState() : super.updateShape(state, facing, facingState, level, currentPos, facingPos);
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
-        pBuilder.add(FACING, AGE);
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(FACING, AGE);
     }
 }

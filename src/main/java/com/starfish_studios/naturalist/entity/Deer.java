@@ -117,8 +117,8 @@ public class Deer extends NaturalistAnimal implements NaturalistGeoEntity {
     }
 
     @Override
-    public boolean isFood(ItemStack pStack) {
-        return pStack.is(Items.APPLE);
+    public boolean isFood(ItemStack stack) {
+        return stack.is(Items.APPLE);
     }
 
     // EATING
@@ -132,11 +132,11 @@ public class Deer extends NaturalistAnimal implements NaturalistGeoEntity {
     }
 
     @Override
-    public void handleEntityEvent(byte pId) {
-        if (pId == 10) {
+    public void handleEntityEvent(byte id) {
+        if (id == 10) {
             this.eatAnimationTick = 40;
         } else {
-            super.handleEntityEvent(pId);
+            super.handleEntityEvent(id);
         }
     }
 
@@ -164,8 +164,8 @@ public class Deer extends NaturalistAnimal implements NaturalistGeoEntity {
     // PANICKING
 
     @Override
-    public boolean hurt(@NotNull DamageSource pSource, float pAmount) {
-        boolean lastHurt = super.hurt(pSource, pAmount);
+    public boolean hurt(@NotNull DamageSource source, float amount) {
+        boolean lastHurt = super.hurt(source, amount);
         if (lastHurt) {
             int ticks = 100 + this.random.nextInt(100);
             this.panicTicks = ticks;

@@ -121,7 +121,7 @@ public class Lion extends NaturalistAnimal implements NaturalistGeoEntity, Sleep
     }
 
     @Override
-    public boolean isFood(@NotNull ItemStack pStack) {
+    public boolean isFood(@NotNull ItemStack stack) {
         return false;
     }
 
@@ -133,15 +133,15 @@ public class Lion extends NaturalistAnimal implements NaturalistGeoEntity, Sleep
     }
 
     @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
-        super.addAdditionalSaveData(pCompound);
-        pCompound.putBoolean("Mane", this.hasMane());
+    public void addAdditionalSaveData(@NotNull CompoundTag compoundTag) {
+        super.addAdditionalSaveData(compoundTag);
+        compoundTag.putBoolean("Mane", this.hasMane());
     }
 
     @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
-        super.readAdditionalSaveData(pCompound);
-        this.setHasMane(pCompound.getBoolean("Mane"));
+    public void readAdditionalSaveData(@NotNull CompoundTag compoundTag) {
+        super.readAdditionalSaveData(compoundTag);
+        this.setHasMane(compoundTag.getBoolean("Mane"));
     }
 
     @Override

@@ -89,7 +89,7 @@ public class Alligator extends NaturalistAnimal implements NaturalistGeoEntity, 
 
     @Nullable
     @Override
-    protected SoundEvent getHurtSound(@NotNull DamageSource pDamageSource) {
+    protected SoundEvent getHurtSound(@NotNull DamageSource damageSource) {
         return NaturalistSoundEvents.GATOR_HURT.get();
     }
 

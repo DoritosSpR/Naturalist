@@ -238,19 +238,19 @@ public class Snail extends ClimbingAnimal implements NaturalistGeoEntity, Bucket
     }
 
     @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
-        super.addAdditionalSaveData(pCompound);
-        pCompound.putBoolean("FromBucket", this.fromBucket());
-        pCompound.putByte("Color", (byte) this.getSnailColor().getId());
-        pCompound.putBoolean("HasEgg", this.hasEgg());
+    public void addAdditionalSaveData(@NotNull CompoundTag compoundTag) {
+        super.addAdditionalSaveData(compoundTag);
+        compoundTag.putBoolean("FromBucket", this.fromBucket());
+        compoundTag.putByte("Color", (byte) this.getSnailColor().getId());
+        compoundTag.putBoolean("HasEgg", this.hasEgg());
     }
 
     @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
-        super.readAdditionalSaveData(pCompound);
-        this.setFromBucket(pCompound.getBoolean("FromBucket"));
-        this.setSnailColor(Color.BY_ID[pCompound.getInt("Color")]);
-        this.setHasEgg(pCompound.getBoolean("HasEgg"));
+    public void readAdditionalSaveData(@NotNull CompoundTag compoundTag) {
+        super.readAdditionalSaveData(compoundTag);
+        this.setFromBucket(compoundTag.getBoolean("FromBucket"));
+        this.setSnailColor(Color.BY_ID[compoundTag.getInt("Color")]);
+        this.setHasEgg(compoundTag.getBoolean("HasEgg"));
     }
 
     public Color getSnailColor() {
@@ -270,8 +270,8 @@ public class Snail extends ClimbingAnimal implements NaturalistGeoEntity, Bucket
     }
 
     @Override
-    public @NotNull InteractionResult mobInteract(Player pPlayer, @NotNull InteractionHand pHand) {
-        ItemStack itemStack = pPlayer.getItemInHand(pHand);
+    public @NotNull InteractionResult mobInteract(Player player, @NotNull InteractionHand hand) {
+        ItemStack itemStack = player.getItemInHand(hand);
         Item item = itemStack.getItem();
         label90:
         {
@@ -282,14 +282,14 @@ public class Snail extends ClimbingAnimal implements NaturalistGeoEntity, Bucket
             DyeColor dyeColor = dyeItem.getDyeColor();
             if (dyeColor != this.getColor()) {
                 this.setColor(dyeColor);
-                if (!pPlayer.getAbilities().instabuild) {
+                if (!player.getAbilities().instabuild) {
                     itemStack.shrink(1);
                 }
 
                 return InteractionResult.SUCCESS;
             }
         }
-        return bucketMobPickup(pPlayer, pHand, this).orElse(super.mobInteract(pPlayer, pHand));
+        return bucketMobPickup(player, hand, this).orElse(super.mobInteract(player, hand));
     }
 
     @SuppressWarnings("deprecation")
@@ -443,8 +443,8 @@ public class Snail extends ClimbingAnimal implements NaturalistGeoEntity, Bucket
     }
 
     static class SnailStrollGoal extends WaterAvoidingRandomStrollGoal {
-        public SnailStrollGoal(PathfinderMob pMob, double pSpeedModifier, float pProbability) {
-            super(pMob, pSpeedModifier, pProbability);
+        public SnailStrollGoal(PathfinderMob mob, double speedModifier, float probability) {
+            super(mob, speedModifier, probability);
             this.forceTrigger = true;
             this.interval = 1;
         }

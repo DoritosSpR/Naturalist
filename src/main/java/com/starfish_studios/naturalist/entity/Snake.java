@@ -105,18 +105,18 @@ public class Snake extends ClimbingAnimal implements SleepingAnimal, NeutralMob,
 
     @Nullable
     @Override
-    public AgeableMob getBreedOffspring(@NotNull ServerLevel p_146743_, @NotNull AgeableMob p_146744_) {
+    public AgeableMob getBreedOffspring(@NotNull ServerLevel level, @NotNull AgeableMob mob) {
         return null;
     }
 
     @Override
-    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor pLevel, @NotNull DifficultyInstance pDifficulty, @NotNull MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
-        this.populateDefaultEquipmentSlots(random, pDifficulty);
-        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
+    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor level, @NotNull DifficultyInstance difficulty, @NotNull MobSpawnType reason, @Nullable SpawnGroupData spawnData) {
+        this.populateDefaultEquipmentSlots(random, difficulty);
+        return super.finalizeSpawn(level, difficulty, reason, spawnData);
     }
 
     @Override
-    protected void populateDefaultEquipmentSlots(@NotNull RandomSource random, @NotNull DifficultyInstance pDifficulty) {
+    protected void populateDefaultEquipmentSlots(@NotNull RandomSource random, @NotNull DifficultyInstance difficulty) {
         if (random.nextFloat() < 0.2F) {
             float chance = random.nextFloat();
             ItemStack stack;
@@ -137,8 +137,8 @@ public class Snake extends ClimbingAnimal implements SleepingAnimal, NeutralMob,
     }
 
     @Override
-    public boolean isFood(@NotNull ItemStack pStack) {
-        return FOOD_ITEMS.test(pStack);
+    public boolean isFood(@NotNull ItemStack stack) {
+        return FOOD_ITEMS.test(stack);
     }
 
     @Override
@@ -150,15 +150,15 @@ public class Snake extends ClimbingAnimal implements SleepingAnimal, NeutralMob,
     }
 
     @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
-        super.readAdditionalSaveData(pCompound);
-        this.readPersistentAngerSaveData(this.level(), pCompound);
+    public void readAdditionalSaveData(@NotNull CompoundTag compoundTag) {
+        super.readAdditionalSaveData(compoundTag);
+        this.readPersistentAngerSaveData(this.level(), compoundTag);
     }
 
     @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
-        super.addAdditionalSaveData(pCompound);
-        this.addPersistentAngerSaveData(pCompound);
+    public void addAdditionalSaveData(@NotNull CompoundTag compoundTag) {
+        super.addAdditionalSaveData(compoundTag);
+        this.addPersistentAngerSaveData(compoundTag);
     }
 
     public boolean isEating() {
@@ -223,29 +223,29 @@ public class Snake extends ClimbingAnimal implements SleepingAnimal, NeutralMob,
     // EATING
 
     @Override
-    public boolean canTakeItem(@NotNull ItemStack pItemstack) {
-        EquipmentSlot slot = getEquipmentSlotForItem(pItemstack);
+    public boolean canTakeItem(@NotNull ItemStack itemStack) {
+        EquipmentSlot slot = getEquipmentSlotForItem(itemStack);
         if (!this.getItemBySlot(slot).isEmpty()) {
             return false;
         } else {
-            return slot == EquipmentSlot.MAINHAND && super.canTakeItem(pItemstack);
+            return slot == EquipmentSlot.MAINHAND && super.canTakeItem(itemStack);
         }
     }
 
     @Override
-    protected void pickUpItem(@NotNull ItemEntity pItemEntity) {
-        ItemStack stack = pItemEntity.getItem();
+    protected void pickUpItem(@NotNull ItemEntity itemEntity) {
+        ItemStack stack = itemEntity.getItem();
         if (this.getMainHandItem().isEmpty() && FOOD_ITEMS.test(stack)) {
-            this.onItemPickup(pItemEntity);
+            this.onItemPickup(itemEntity);
             this.setItemSlot(EquipmentSlot.MAINHAND, stack);
             this.handDropChances[EquipmentSlot.MAINHAND.getIndex()] = 2.0F;
-            this.take(pItemEntity, stack.getCount());
-            pItemEntity.discard();
+            this.take(itemEntity, stack.getCount());
+            itemEntity.discard();
         }
     }
 
     @Override
-    public boolean hurt(@NotNull DamageSource pSource, float pAmount) {
+    public boolean hurt(@NotNull DamageSource source, float amount) {
         if (!this.getMainHandItem().isEmpty() && !this.level().isClientSide) {
             ItemEntity itemEntity = new ItemEntity(this.level(), this.getX() + this.getLookAngle().x, this.getY() + 1.0D, this.getZ() + this.getLookAngle().z, this.getMainHandItem());
             itemEntity.setPickUpDelay(80);
@@ -254,7 +254,7 @@ public class Snake extends ClimbingAnimal implements SleepingAnimal, NeutralMob,
             this.level().addFreshEntity(itemEntity);
             this.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
         }
-        return super.hurt(pSource, pAmount);
+        return super.hurt(source, amount);
     }
 
     // MOVEMENT
@@ -304,8 +304,8 @@ public class Snake extends ClimbingAnimal implements SleepingAnimal, NeutralMob,
     }
 
     @Override
-    public void setRemainingPersistentAngerTime(int pTime) {
-        this.entityData.set(REMAINING_ANGER_TIME, pTime);
+    public void setRemainingPersistentAngerTime(int time) {
+        this.entityData.set(REMAINING_ANGER_TIME, time);
     }
 
     @Nullable
@@ -315,18 +315,18 @@ public class Snake extends ClimbingAnimal implements SleepingAnimal, NeutralMob,
     }
 
     @Override
-    public void setPersistentAngerTarget(@Nullable UUID pTarget) {
-        this.persistentAngerTarget = pTarget;
+    public void setPersistentAngerTarget(@Nullable UUID target) {
+        this.persistentAngerTarget = target;
     }
 
     // SNAKE VARIANTS
 
     @Override
-    public boolean doHurtTarget(@NotNull Entity pEntity) {
-        if ((this.getType().equals(NaturalistEntityTypes.CORAL_SNAKE.get()) || this.getType().equals(NaturalistEntityTypes.RATTLESNAKE.get())) && pEntity instanceof LivingEntity living) {
+    public boolean doHurtTarget(@NotNull Entity entity) {
+        if ((this.getType().equals(NaturalistEntityTypes.CORAL_SNAKE.get()) || this.getType().equals(NaturalistEntityTypes.RATTLESNAKE.get())) && entity instanceof LivingEntity living) {
             living.addEffect(new MobEffectInstance(MobEffects.POISON, 40));
         }
-        return super.doHurtTarget(pEntity);
+        return super.doHurtTarget(entity);
     }
 
     private boolean canRattle() {
@@ -354,7 +354,7 @@ public class Snake extends ClimbingAnimal implements SleepingAnimal, NeutralMob,
 
     @Nullable
     @Override
-    protected SoundEvent getHurtSound(@NotNull DamageSource pDamageSource) {
+    protected SoundEvent getHurtSound(@NotNull DamageSource damageSource) {
         return NaturalistSoundEvents.SNAKE_HURT.get();
     }
 
@@ -442,8 +442,8 @@ public class Snake extends ClimbingAnimal implements SleepingAnimal, NeutralMob,
 
         private long lastCanUseCheck;
 
-        public SnakeMeleeAttackGoal(@NotNull PathfinderMob pMob, double pSpeedModifier, boolean pFollowingTargetEvenIfNotSeen) {
-            super(pMob, pSpeedModifier, pFollowingTargetEvenIfNotSeen);
+        public SnakeMeleeAttackGoal(@NotNull PathfinderMob mob, double speedModifier, boolean followingTargetEvenIfNotSeen) {
+            super(mob, speedModifier, followingTargetEvenIfNotSeen);
         }
 
         @Override
@@ -478,8 +478,8 @@ public class Snake extends ClimbingAnimal implements SleepingAnimal, NeutralMob,
             return mob.getMainHandItem().isEmpty() && super.canContinueToUse();
         }
 
-        protected double getAttackReachSqr(LivingEntity pAttackTarget) {
-            return 4.0 + pAttackTarget.getBbWidth();
+        protected double getAttackReachSqr(LivingEntity attackTarget) {
+            return 4.0 + attackTarget.getBbWidth();
         }
     }
 }

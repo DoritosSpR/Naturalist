@@ -24,8 +24,8 @@ public abstract class ClimbingAnimal extends NaturalistAnimal {
     }
 
     @Override
-    protected @NotNull PathNavigation createNavigation(@NotNull Level pLevel) {
-        return new BetterWallClimberNavigation(this, pLevel);
+    protected @NotNull PathNavigation createNavigation(@NotNull Level level) {
+        return new BetterWallClimberNavigation(this, level);
     }
 
     @Override
@@ -48,9 +48,9 @@ public abstract class ClimbingAnimal extends NaturalistAnimal {
         return (this.entityData.get(CLIMB_FLAG) & 1) != 0;
     }
 
-    public void setClimbing(boolean pClimbing) {
+    public void setClimbing(boolean climbing) {
         byte flag = this.entityData.get(CLIMB_FLAG);
-        if (pClimbing) {
+        if (climbing) {
             flag = (byte) (flag | 1);
         } else {
             flag = (byte) (flag & -2);

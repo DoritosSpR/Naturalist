@@ -122,15 +122,15 @@ public class Giraffe extends NaturalistAnimal implements NaturalistGeoEntity {
     }
 
     @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
-        super.addAdditionalSaveData(pCompound);
-        pCompound.putInt("TameTicks", this.getTameTicks());
+    public void addAdditionalSaveData(@NotNull CompoundTag compoundTag) {
+        super.addAdditionalSaveData(compoundTag);
+        compoundTag.putInt("TameTicks", this.getTameTicks());
     }
 
     @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
-        super.readAdditionalSaveData(pCompound);
-        this.setTameTicks(pCompound.getInt("TameTicks"));
+    public void readAdditionalSaveData(@NotNull CompoundTag compoundTag) {
+        super.readAdditionalSaveData(compoundTag);
+        this.setTameTicks(compoundTag.getInt("TameTicks"));
     }
 
     public int getTameTicks() {

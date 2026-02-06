@@ -170,8 +170,8 @@ public class Vulture extends PathfinderMob implements NaturalistGeoEntity, Flyin
     }
 
     @Override
-    public boolean isInvulnerableTo(DamageSource pSource) {
-        return pSource.equals(this.damageSources().cactus()) || super.isInvulnerableTo(pSource);
+    public boolean isInvulnerableTo(DamageSource source) {
+        return source.equals(this.damageSources().cactus()) || super.isInvulnerableTo(source);
     }
 
     @Override
@@ -238,38 +238,38 @@ public class Vulture extends PathfinderMob implements NaturalistGeoEntity, Flyin
     }
 
     @Override
-    public boolean canTakeItem(@NotNull ItemStack pItemstack) {
+    public boolean canTakeItem(@NotNull ItemStack itemStack) {
         return !FOOD_ITEMS.test(this.getMainHandItem());
     }
 
     @Override
-    public boolean canHoldItem(@NotNull ItemStack pStack) {
-        return FOOD_ITEMS.test(pStack) && !FOOD_ITEMS.test(this.getMainHandItem());
+    public boolean canHoldItem(@NotNull ItemStack stack) {
+        return FOOD_ITEMS.test(stack) && !FOOD_ITEMS.test(this.getMainHandItem());
     }
 
     @Override
-    protected void pickUpItem(ItemEntity pItemEntity) {
-        ItemStack itemstack = pItemEntity.getItem();
+    protected void pickUpItem(ItemEntity itemEntity) {
+        ItemStack itemstack = itemEntity.getItem();
         if (this.canHoldItem(itemstack)) {
             if (!this.getMainHandItem().isEmpty() && !FOOD_ITEMS.test(this.getMainHandItem())) {
                 this.dropItemStack(this.getMainHandItem());
             }
-            this.onItemPickup(pItemEntity);
+            this.onItemPickup(itemEntity);
             this.setItemSlot(EquipmentSlot.MAINHAND, itemstack);
-            this.take(pItemEntity, itemstack.getCount());
-            pItemEntity.discard();
+            this.take(itemEntity, itemstack.getCount());
+            itemEntity.discard();
             this.ticksSinceEaten = 0;
         }
     }
 
-    private void dropItemStack(ItemStack pStack) {
-        ItemEntity itementity = new ItemEntity(this.level(), this.getX(), this.getY(), this.getZ(), pStack);
+    private void dropItemStack(ItemStack stack) {
+        ItemEntity itementity = new ItemEntity(this.level(), this.getX(), this.getY(), this.getZ(), stack);
         this.level().addFreshEntity(itementity);
     }
 
     @Override
-    protected @NotNull PathNavigation createNavigation(@NotNull Level pLevel) {
-        VulturePathNavigation navigation = new VulturePathNavigation(this, pLevel);
+    protected @NotNull PathNavigation createNavigation(@NotNull Level level) {
+        VulturePathNavigation navigation = new VulturePathNavigation(this, level);
         navigation.setCanOpenDoors(false);
         navigation.setCanFloat(true);
         navigation.setCanPassDoors(true);

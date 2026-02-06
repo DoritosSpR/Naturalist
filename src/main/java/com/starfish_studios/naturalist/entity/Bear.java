@@ -129,19 +129,19 @@ public class Bear extends NaturalistAnimal implements NeutralMob, NaturalistGeoE
     }
 
     @Override
-    public boolean isFood(@NotNull ItemStack pStack) {
-        return FOOD_ITEMS.test(pStack);
+    public boolean isFood(@NotNull ItemStack stack) {
+        return FOOD_ITEMS.test(stack);
     }
 
     // ATTRIBUTES/GOALS/LOGIC
 
     @Override
-    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor pLevel, @NotNull DifficultyInstance pDifficulty, @NotNull MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
-        if (pSpawnData == null) {
-            pSpawnData = new AgeableMobGroupData(1.0F);
+    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor level, @NotNull DifficultyInstance difficulty, @NotNull MobSpawnType reason, @Nullable SpawnGroupData spawnData) {
+        if (spawnData == null) {
+            spawnData = new AgeableMobGroupData(1.0F);
         }
 
-        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
+        return super.finalizeSpawn(level, difficulty, reason, spawnData);
     }
 
     @Override
@@ -197,8 +197,8 @@ public class Bear extends NaturalistAnimal implements NeutralMob, NaturalistGeoE
     }
 
     @Override
-    public boolean isInvulnerableTo(DamageSource pSource) {
-        return pSource.equals(this.damageSources().sweetBerryBush()) || super.isInvulnerableTo(pSource);
+    public boolean isInvulnerableTo(DamageSource source) {
+        return source.equals(this.damageSources().sweetBerryBush()) || super.isInvulnerableTo(source);
     }
 
     // ENTITY DATA
@@ -215,19 +215,19 @@ public class Bear extends NaturalistAnimal implements NeutralMob, NaturalistGeoE
     }
 
     @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
-        super.readAdditionalSaveData(pCompound);
-        this.readPersistentAngerSaveData(this.level(), pCompound);
-        if (pCompound.contains("Sheared")) {
-            this.setSheared(pCompound.getBoolean("Sheared"));
+    public void readAdditionalSaveData(@NotNull CompoundTag compoundTag) {
+        super.readAdditionalSaveData(compoundTag);
+        this.readPersistentAngerSaveData(this.level(), compoundTag);
+        if (compoundTag.contains("Sheared")) {
+            this.setSheared(compoundTag.getBoolean("Sheared"));
         }
     }
 
     @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
-        super.addAdditionalSaveData(pCompound);
-        this.addPersistentAngerSaveData(pCompound);
-        pCompound.putBoolean("Sheared", this.isSheared());
+    public void addAdditionalSaveData(@NotNull CompoundTag compoundTag) {
+        super.addAdditionalSaveData(compoundTag);
+        this.addPersistentAngerSaveData(compoundTag);
+        compoundTag.putBoolean("Sheared", this.isSheared());
     }
 
     @Override
@@ -299,8 +299,8 @@ public class Bear extends NaturalistAnimal implements NeutralMob, NaturalistGeoE
     }
 
     @Override
-    public void setRemainingPersistentAngerTime(int pTime) {
-        this.entityData.set(REMAINING_ANGER_TIME, pTime);
+    public void setRemainingPersistentAngerTime(int time) {
+        this.entityData.set(REMAINING_ANGER_TIME, time);
     }
 
     @Nullable
@@ -310,8 +310,8 @@ public class Bear extends NaturalistAnimal implements NeutralMob, NaturalistGeoE
     }
 
     @Override
-    public void setPersistentAngerTarget(@Nullable UUID pTarget) {
-        this.persistentAngerTarget = pTarget;
+    public void setPersistentAngerTarget(@Nullable UUID target) {
+        this.persistentAngerTarget = target;
     }
 
     // EATING
@@ -358,29 +358,29 @@ public class Bear extends NaturalistAnimal implements NeutralMob, NaturalistGeoE
     }
 
     @Override
-    public boolean canTakeItem(@NotNull ItemStack pItemstack) {
-        EquipmentSlot slot = this.getEquipmentSlotForItem(pItemstack);
+    public boolean canTakeItem(@NotNull ItemStack itemStack) {
+        EquipmentSlot slot = this.getEquipmentSlotForItem(itemStack);
         if (!this.getItemBySlot(slot).isEmpty() || this.isBaby()) {
             return false;
         } else {
-            return slot == EquipmentSlot.MAINHAND && super.canTakeItem(pItemstack);
+            return slot == EquipmentSlot.MAINHAND && super.canTakeItem(itemStack);
         }
     }
 
     @Override
-    protected void pickUpItem(@NotNull ItemEntity pItemEntity) {
-        ItemStack stack = pItemEntity.getItem();
+    protected void pickUpItem(@NotNull ItemEntity itemEntity) {
+        ItemStack stack = itemEntity.getItem();
         if (this.getMainHandItem().isEmpty() && FOOD_ITEMS.test(stack) && !this.isBaby()) {
-            this.onItemPickup(pItemEntity);
+            this.onItemPickup(itemEntity);
             this.setItemSlot(EquipmentSlot.MAINHAND, stack);
             this.handDropChances[EquipmentSlot.MAINHAND.getIndex()] = 2.0F;
-            this.take(pItemEntity, stack.getCount());
-            pItemEntity.discard();
+            this.take(itemEntity, stack.getCount());
+            itemEntity.discard();
         }
     }
 
     @Override
-    public boolean hurt(@NotNull DamageSource pSource, float pAmount) {
+    public boolean hurt(@NotNull DamageSource source, float amount) {
         if (!this.getMainHandItem().isEmpty() && !this.level().isClientSide) {
             ItemEntity itemEntity = new ItemEntity(this.level(), this.getX() + this.getLookAngle().x, this.getY() + 1.0D, this.getZ() + this.getLookAngle().z, this.getMainHandItem());
             itemEntity.setPickUpDelay(80);
@@ -389,7 +389,7 @@ public class Bear extends NaturalistAnimal implements NeutralMob, NaturalistGeoE
             this.level().addFreshEntity(itemEntity);
             this.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
         }
-        return super.hurt(pSource, pAmount);
+        return super.hurt(source, amount);
     }
 
     // SHEARING
@@ -455,7 +455,7 @@ public class Bear extends NaturalistAnimal implements NeutralMob, NaturalistGeoE
 
     @Nullable
     @Override
-    protected SoundEvent getHurtSound(@NotNull DamageSource pDamageSource) {
+    protected SoundEvent getHurtSound(@NotNull DamageSource damageSource) {
         return this.isBaby() ? NaturalistSoundEvents.BEAR_HURT_BABY.get() : NaturalistSoundEvents.BEAR_HURT.get();
     }
 
@@ -477,7 +477,7 @@ public class Bear extends NaturalistAnimal implements NeutralMob, NaturalistGeoE
     }
 
     @Override
-    protected void playStepSound(@NotNull BlockPos pPos, @NotNull BlockState pBlock) {
+    protected void playStepSound(@NotNull BlockPos pos, @NotNull BlockState state) {
         this.playSound(SoundEvents.POLAR_BEAR_STEP, 0.15F, 1.0F);
     }
 
@@ -557,9 +557,9 @@ public class Bear extends NaturalistAnimal implements NeutralMob, NaturalistGeoE
     static class BearAttackPlayerNearBabiesGoal extends NearestAttackableTargetGoal<Player> {
         private final Bear bear;
 
-        public BearAttackPlayerNearBabiesGoal(Bear pMob, Class<Player> pTargetType, int pRandomInterval, boolean pMustSee, boolean pMustReach, @org.jetbrains.annotations.Nullable Predicate<LivingEntity> pTargetPredicate) {
-            super(pMob, pTargetType, pRandomInterval, pMustSee, pMustReach, pTargetPredicate);
-            this.bear = pMob;
+        public BearAttackPlayerNearBabiesGoal(Bear mob, Class<Player> targetType, int randomInterval, boolean mustSee, boolean mustReach, @org.jetbrains.annotations.Nullable Predicate<LivingEntity> targetPredicate) {
+            super(mob, targetType, randomInterval, mustSee, mustReach, targetPredicate);
+            this.bear = mob;
         }
 
         @Override
@@ -587,9 +587,9 @@ public class Bear extends NaturalistAnimal implements NeutralMob, NaturalistGeoE
         private final @NotNull Bear bear;
         protected int ticksWaited;
 
-        public BearHarvestFoodGoal(@NotNull Bear pMob, double pSpeedModifier, int pSearchRange, int pVerticalSearchRange) {
-            super(pMob, pSpeedModifier, pSearchRange, pVerticalSearchRange);
-            this.bear = pMob;
+        public BearHarvestFoodGoal(@NotNull Bear mob, double speedModifier, int searchRange, int verticalSearchRange) {
+            super(mob, speedModifier, searchRange, verticalSearchRange);
+            this.bear = mob;
         }
 
         @Override
@@ -602,13 +602,13 @@ public class Bear extends NaturalistAnimal implements NeutralMob, NaturalistGeoE
         }
 
         @Override
-        protected boolean isValidTarget(LevelReader pLevel, @NotNull BlockPos pPos) {
-            BlockState state = pLevel.getBlockState(pPos);
+        protected boolean isValidTarget(LevelReader level, @NotNull BlockPos pos) {
+            BlockState state = level.getBlockState(pos);
             if (state.getBlock() instanceof BeehiveBlock) {
                 return state.getValue(BeehiveBlock.HONEY_LEVEL) >= 5;
             } else if (state.is(Blocks.SWEET_BERRY_BUSH)) {
                 return state.getValue(SweetBerryBushBlock.AGE) >= 2;
-            } else if (state.is(Blocks.CAMPFIRE) && pLevel.getBlockEntity(pPos) instanceof CampfireBlockEntity campfire) {
+            } else if (state.is(Blocks.CAMPFIRE) && level.getBlockEntity(pos) instanceof CampfireBlockEntity campfire) {
                 return campfireIsTempting(campfire);
             }
             return false;
@@ -712,9 +712,9 @@ public class Bear extends NaturalistAnimal implements NeutralMob, NaturalistGeoE
     static class BearFloatGoal extends FloatGoal {
         private final Bear bear;
 
-        public BearFloatGoal(Bear pMob) {
-            super(pMob);
-            this.bear = pMob;
+        public BearFloatGoal(Bear mob) {
+            super(mob);
+            this.bear = mob;
         }
 
         @Override
@@ -730,9 +730,9 @@ public class Bear extends NaturalistAnimal implements NeutralMob, NaturalistGeoE
     static class BearTemptGoal extends TemptGoal {
         private final Bear bear;
 
-        public BearTemptGoal(Bear pMob, double pSpeedModifier, Ingredient pItems, boolean pCanScare) {
-            super(pMob, pSpeedModifier, pItems, pCanScare);
-            this.bear = pMob;
+        public BearTemptGoal(Bear mob, double speedModifier, Ingredient items, boolean canScare) {
+            super(mob, speedModifier, items, canScare);
+            this.bear = mob;
         }
 
         @Override
@@ -815,8 +815,8 @@ public class Bear extends NaturalistAnimal implements NeutralMob, NaturalistGeoE
 
     static class BearMeleeAttackGoal extends MeleeAttackGoal {
 
-        public BearMeleeAttackGoal(PathfinderMob pMob, double pSpeedModifier, boolean pFollowingTargetEvenIfNotSeen) {
-            super(pMob, pSpeedModifier, pFollowingTargetEvenIfNotSeen);
+        public BearMeleeAttackGoal(PathfinderMob mob, double speedModifier, boolean followingTargetEvenIfNotSeen) {
+            super(mob, speedModifier, followingTargetEvenIfNotSeen);
         }
 
         @Override

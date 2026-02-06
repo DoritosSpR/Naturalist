@@ -75,12 +75,12 @@ public class Rhino extends NaturalistAnimal implements NaturalistGeoEntity {
     }
 
     @Override
-    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor pLevel, @NotNull DifficultyInstance pDifficulty, @NotNull MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
-        if (pSpawnData == null) {
-            pSpawnData = new AgeableMobGroupData(1.0F);
+    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor level, @NotNull DifficultyInstance difficulty, @NotNull MobSpawnType reason, @Nullable SpawnGroupData spawnData) {
+        if (spawnData == null) {
+            spawnData = new AgeableMobGroupData(1.0F);
         }
 
-        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
+        return super.finalizeSpawn(level, difficulty, reason, spawnData);
     }
 
     @Override
@@ -105,7 +105,7 @@ public class Rhino extends NaturalistAnimal implements NaturalistGeoEntity {
         this.goalSelector.addGoal(1, new RhinoMeleeAttackGoal(this, 1.2D, false));
         this.goalSelector.addGoal(2, new RhinoPrepareChargeGoal(this));
         this.goalSelector.addGoal(3, new RhinoChargeGoal(this, 2.5F));
-        // this.goalSelector.addGoal(4, new AvoidEntityGoal<>(this, LivingEntity.class, 8.0F, 0.8D, 1.2D, (p_213619_0_) -> p_213619_0_.getItemBySlot(EquipmentSlot.HEAD).getItem() == Items.CARVED_PUMPKIN));
+        // this.goalSelector.addGoal(4, new AvoidEntityGoal<>(this, LivingEntity.class, 8.0F, 0.8D, 1.2D, (entity) -> entity.getItemBySlot(EquipmentSlot.HEAD).getItem() == Items.CARVED_PUMPKIN));
         this.goalSelector.addGoal(3, new BabyPanicGoal(this, 2.0D));
         this.goalSelector.addGoal(4, new FollowParentGoal(this, 1.1));
         this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 1.0));
@@ -113,7 +113,7 @@ public class Rhino extends NaturalistAnimal implements NaturalistGeoEntity {
         this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new BabyHurtByTargetGoal(this));
         this.targetSelector.addGoal(2, new RhinoNearestAttackablePlayerTargetGoal(this));
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 0, false, false, (p_213619_0_) -> p_213619_0_.getItemBySlot(EquipmentSlot.HEAD).getItem() == Items.CARVED_PUMPKIN));
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 0, false, false, (entity) -> entity.getItemBySlot(EquipmentSlot.HEAD).getItem() == Items.CARVED_PUMPKIN));
     }
 
     @Nullable

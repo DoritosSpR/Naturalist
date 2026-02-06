@@ -88,8 +88,8 @@ public class Butterfly extends NaturalistAnimal implements NaturalistGeoEntity, 
     }
 
     @SuppressWarnings("all")
-    public static boolean checkButterflySpawnRules(EntityType<? extends Butterfly> pType, ServerLevelAccessor pLevel, MobSpawnType pReason, @NotNull BlockPos pPos, RandomSource pRandom) {
-        return pLevel.getBlockState(pPos.below()).is(NaturalistTags.BlockTags.BUTTERFLIES_SPAWNABLE_ON);
+    public static boolean checkButterflySpawnRules(EntityType<? extends Butterfly> type, ServerLevelAccessor level, MobSpawnType reason, @NotNull BlockPos pos, RandomSource random) {
+        return level.getBlockState(pos.below()).is(NaturalistTags.BlockTags.BUTTERFLIES_SPAWNABLE_ON);
     }
 
     @Override
@@ -109,10 +109,10 @@ public class Butterfly extends NaturalistAnimal implements NaturalistGeoEntity, 
     }
 
     @Override
-    protected @NotNull PathNavigation createNavigation(@NotNull Level pLevel) {
-        FlyingPathNavigation navigation = new FlyingPathNavigation(this, pLevel) {
-            public boolean isStableDestination(@NotNull BlockPos pPos) {
-                return !pLevel.getBlockState(pPos.below()).isAir();
+    protected @NotNull PathNavigation createNavigation(@NotNull Level level) {
+        FlyingPathNavigation navigation = new FlyingPathNavigation(this, level) {
+            public boolean isStableDestination(@NotNull BlockPos pos) {
+                return !level.getBlockState(pos.below()).isAir();
             }
         };
         navigation.setCanOpenDoors(false);
@@ -124,8 +124,8 @@ public class Butterfly extends NaturalistAnimal implements NaturalistGeoEntity, 
     // region DATA
 
     @Override
-    public float getWalkTargetValue(@NotNull BlockPos pPos, LevelReader pLevel) {
-        return pLevel.getBlockState(pPos).isAir() ? 10.0F : 0.0F;
+    public float getWalkTargetValue(@NotNull BlockPos pos, LevelReader level) {
+        return level.getBlockState(pos).isAir() ? 10.0F : 0.0F;
     }
 
     @Override
@@ -247,8 +247,8 @@ public class Butterfly extends NaturalistAnimal implements NaturalistGeoEntity, 
     // region MISC
 
     @Override
-    public boolean isFood(@NotNull ItemStack pStack) {
-        return pStack.is(ItemTags.FLOWERS);
+    public boolean isFood(@NotNull ItemStack stack) {
+        return stack.is(ItemTags.FLOWERS);
     }
 
     public @NotNull InteractionResult mobInteract(@NotNull Player player, @NotNull InteractionHand hand) {
@@ -308,16 +308,16 @@ public class Butterfly extends NaturalistAnimal implements NaturalistGeoEntity, 
     }
 
     @Override
-    public boolean causeFallDamage(float pFallDistance, float pMultiplier, @NotNull DamageSource pSource) {
+    public boolean causeFallDamage(float fallDistance, float multiplier, @NotNull DamageSource source) {
         return false;
     }
 
     @Override
-    protected void checkFallDamage(double pY, boolean pOnGround, @NotNull BlockState pState, @NotNull BlockPos pPos) {
+    protected void checkFallDamage(double y, boolean onGround, @NotNull BlockState state, @NotNull BlockPos pos) {
     }
 
     @Override
-    protected void playStepSound(@NotNull BlockPos pPos, @NotNull BlockState pState) {
+    protected void playStepSound(@NotNull BlockPos pos, @NotNull BlockState state) {
     }
 
     // endregion
@@ -405,14 +405,14 @@ public class Butterfly extends NaturalistAnimal implements NaturalistGeoEntity, 
         private final Butterfly butterfly;
         protected int ticksWaited;
 
-        public ButterflyPollinateGoal(@NotNull Butterfly pMob, double pSpeedModifier, int pSearchRange, int pVerticalSearchRange) {
-            super(pMob, pSpeedModifier, pSearchRange, pVerticalSearchRange);
-            this.butterfly = pMob;
+        public ButterflyPollinateGoal(@NotNull Butterfly mob, double speedModifier, int searchRange, int verticalSearchRange) {
+            super(mob, speedModifier, searchRange, verticalSearchRange);
+            this.butterfly = mob;
         }
 
         @Override
-        protected boolean isValidTarget(LevelReader pLevel, @NotNull BlockPos pPos) {
-            return pLevel.getBlockState(pPos).is(BlockTags.FLOWERS);
+        protected boolean isValidTarget(LevelReader level, @NotNull BlockPos pos) {
+            return level.getBlockState(pos).is(BlockTags.FLOWERS);
         }
 
         @Override
@@ -455,14 +455,14 @@ public class Butterfly extends NaturalistAnimal implements NaturalistGeoEntity, 
     static class ButterflyGrowCropGoal extends MoveToBlockGoal {
         private final Butterfly butterfly;
 
-        public ButterflyGrowCropGoal(Butterfly pMob, double pSpeedModifier, int pSearchRange, int pVerticalSearchRange) {
-            super(pMob, pSpeedModifier, pSearchRange, pVerticalSearchRange);
-            this.butterfly = pMob;
+        public ButterflyGrowCropGoal(Butterfly mob, double speedModifier, int searchRange, int verticalSearchRange) {
+            super(mob, speedModifier, searchRange, verticalSearchRange);
+            this.butterfly = mob;
         }
 
         @Override
-        protected boolean isValidTarget(LevelReader pLevel, @NotNull BlockPos pPos) {
-            BlockState state = pLevel.getBlockState(pPos);
+        protected boolean isValidTarget(LevelReader level, @NotNull BlockPos pos) {
+            BlockState state = level.getBlockState(pos);
             return state.getBlock() instanceof CropBlock cropBlock && cropBlock.getAge(state) < cropBlock.getMaxAge();
         }
 

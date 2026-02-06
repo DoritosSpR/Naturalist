@@ -65,8 +65,8 @@ public class Duck extends NaturalistAnimal implements NaturalistGeoEntity {
     }
 
     @SuppressWarnings("all")
-    public static boolean checkDuckSpawnRules(EntityType<? extends Duck> pType, @NotNull ServerLevelAccessor pLevel, MobSpawnType pReason, BlockPos pPos, RandomSource pRandom) {
-        return pLevel.getBlockState(pPos.below()).is(NaturalistTags.BlockTags.DUCKS_SPAWNABLE_ON) || pLevel.getBlockState(pPos.below()).getFluidState().is(FluidTags.WATER);
+    public static boolean checkDuckSpawnRules(EntityType<? extends Duck> type, @NotNull ServerLevelAccessor level, MobSpawnType reason, BlockPos pos, RandomSource random) {
+        return level.getBlockState(pos.below()).is(NaturalistTags.BlockTags.DUCKS_SPAWNABLE_ON) || level.getBlockState(pos.below()).getFluidState().is(FluidTags.WATER);
     }
 
     @Override
@@ -92,8 +92,8 @@ public class Duck extends NaturalistAnimal implements NaturalistGeoEntity {
     }
 
     @Override
-    public boolean isFood(@NotNull ItemStack pStack) {
-        return FOOD_ITEMS.test(pStack);
+    public boolean isFood(@NotNull ItemStack stack) {
+        return FOOD_ITEMS.test(stack);
     }
 
     @Override

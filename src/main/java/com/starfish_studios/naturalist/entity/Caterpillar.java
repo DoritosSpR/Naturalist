@@ -75,9 +75,9 @@ public class Caterpillar extends ClimbingAnimal implements NaturalistGeoEntity, 
     }
 
     @Override
-    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor pLevel, @NotNull DifficultyInstance pDifficulty, @NotNull MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
+    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor level, @NotNull DifficultyInstance difficulty, @NotNull MobSpawnType reason, @Nullable SpawnGroupData spawnData) {
         this.setAge(0);
-        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
+        return super.finalizeSpawn(level, difficulty, reason, spawnData);
     }
 
     @Nullable
@@ -92,8 +92,8 @@ public class Caterpillar extends ClimbingAnimal implements NaturalistGeoEntity, 
     }
 
     @Override
-    public boolean isFood(@NotNull ItemStack pStack) {
-        return this.isBaby() && pStack.is(ItemTags.FLOWERS);
+    public boolean isFood(@NotNull ItemStack stack) {
+        return this.isBaby() && stack.is(ItemTags.FLOWERS);
     }
 
     @Override
@@ -114,12 +114,12 @@ public class Caterpillar extends ClimbingAnimal implements NaturalistGeoEntity, 
     }
 
     @Override
-    public boolean causeFallDamage(float pFallDistance, float pMultiplier, @NotNull DamageSource pSource) {
+    public boolean causeFallDamage(float fallDistance, float multiplier, @NotNull DamageSource source) {
         return false;
     }
 
     @Override
-    protected void checkFallDamage(double pY, boolean pOnGround, @NotNull BlockState pState, @NotNull BlockPos pPos) {
+    protected void checkFallDamage(double y, boolean onGround, @NotNull BlockState state, @NotNull BlockPos pos) {
     }
 
     @Override
@@ -209,9 +209,9 @@ public class Caterpillar extends ClimbingAnimal implements NaturalistGeoEntity, 
         private @NotNull Direction facing = Direction.NORTH;
         private BlockPos logPos = BlockPos.ZERO;
 
-        public CocoonGoal(Caterpillar pMob, double pSpeedModifier, int pSearchRange, int pVerticalSearchRange) {
-            super(pMob, pSpeedModifier, pSearchRange, pVerticalSearchRange);
-            this.caterpillar = pMob;
+        public CocoonGoal(Caterpillar mob, double speedModifier, int searchRange, int verticalSearchRange) {
+            super(mob, speedModifier, searchRange, verticalSearchRange);
+            this.caterpillar = mob;
         }
 
         @Override
@@ -221,12 +221,12 @@ public class Caterpillar extends ClimbingAnimal implements NaturalistGeoEntity, 
 
 
         @Override
-        protected boolean isValidTarget(LevelReader pLevel, @NotNull BlockPos pPos) {
-            if (pLevel.getBlockState(pPos).isAir()) {
+        protected boolean isValidTarget(LevelReader level, @NotNull BlockPos pos) {
+            if (level.getBlockState(pos).isAir()) {
                 for (Direction direction : Direction.Plane.HORIZONTAL) {
-                    if (pLevel.getBlockState(pPos.relative(direction)).is(BlockTags.LOGS) && pLevel.getBlockState(pPos.relative(direction).below()).is(BlockTags.LOGS)) {
+                    if (level.getBlockState(pos.relative(direction)).is(BlockTags.LOGS) && level.getBlockState(pos.relative(direction).below()).is(BlockTags.LOGS)) {
                         this.facing = direction;
-                        this.logPos = pPos.relative(direction);
+                        this.logPos = pos.relative(direction);
                         return true;
                     }
                 }

@@ -25,9 +25,9 @@ public class NoFluidMobBucketItem extends MobBucketItem {
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level pLevel, @NotNull Player pPlayer, @NotNull InteractionHand pHand) {
-        ItemStack itemstack = pPlayer.getItemInHand(pHand);
-        BlockHitResult blockhitresult = getPlayerPOVHitResult(pLevel, pPlayer, ClipContext.Fluid.NONE);
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
+        ItemStack itemstack = player.getItemInHand(hand);
+        BlockHitResult blockhitresult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);
         if (blockhitresult.getType() == HitResult.Type.MISS) {
             return InteractionResultHolder.pass(itemstack);
         } else if (blockhitresult.getType() != HitResult.Type.BLOCK) {
@@ -36,11 +36,11 @@ public class NoFluidMobBucketItem extends MobBucketItem {
             BlockPos pos = blockhitresult.getBlockPos();
             Direction direction = blockhitresult.getDirection();
             BlockPos blockpos1 = pos.relative(direction);
-            if (pLevel.mayInteract(pPlayer, pos) && pPlayer.mayUseItemAt(blockpos1, direction, itemstack)) {
-                this.checkExtraContent(pPlayer, pLevel, itemstack, pos);
-                this.playEmptySound(pPlayer, pLevel, pos);
-                pPlayer.awardStat(Stats.ITEM_USED.get(this));
-                ItemStack resultStack = getEmptySuccessItem(itemstack, pPlayer);
+            if (level.mayInteract(player, pos) && player.mayUseItemAt(blockpos1, direction, itemstack)) {
+                this.checkExtraContent(player, level, itemstack, pos);
+                this.playEmptySound(player, level, pos);
+                player.awardStat(Stats.ITEM_USED.get(this));
+                ItemStack resultStack = getEmptySuccessItem(itemstack, player);
                 return InteractionResultHolder.success(resultStack);
             } else {
                 return InteractionResultHolder.fail(itemstack);

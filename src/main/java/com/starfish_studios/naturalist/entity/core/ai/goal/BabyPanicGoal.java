@@ -5,8 +5,8 @@ import net.minecraft.world.entity.ai.goal.PanicGoal;
 import org.jetbrains.annotations.NotNull;
 
 public class BabyPanicGoal extends PanicGoal {
-    public BabyPanicGoal(@NotNull PathfinderMob pMob, double pSpeedModifier) {
-        super(pMob, pSpeedModifier);
+    public BabyPanicGoal(@NotNull PathfinderMob mob, double speedModifier) {
+        super(mob, speedModifier);
     }
 
     @Override

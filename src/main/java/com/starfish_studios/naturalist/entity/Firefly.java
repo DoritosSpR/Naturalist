@@ -69,8 +69,8 @@ public class Firefly extends NaturalistAnimal implements FlyingAnimal, Naturalis
     }
 
     @SuppressWarnings("all")
-    public static boolean checkFireflySpawnRules(EntityType<? extends Firefly> pType, ServerLevelAccessor pLevel, MobSpawnType pReason, BlockPos pPos, RandomSource pRandom) {
-        return Monster.isDarkEnoughToSpawn(pLevel, pPos, pRandom) && pLevel.getBlockState(pPos.below()).is(NaturalistTags.BlockTags.FIREFLIES_SPAWNABLE_ON);
+    public static boolean checkFireflySpawnRules(EntityType<? extends Firefly> type, ServerLevelAccessor level, MobSpawnType reason, BlockPos pos, RandomSource random) {
+        return Monster.isDarkEnoughToSpawn(level, pos, random) && level.getBlockState(pos.below()).is(NaturalistTags.BlockTags.FIREFLIES_SPAWNABLE_ON);
     }
 
     @Override
@@ -79,10 +79,10 @@ public class Firefly extends NaturalistAnimal implements FlyingAnimal, Naturalis
     }
 
     @Override
-    protected @NotNull PathNavigation createNavigation(@NotNull Level pLevel) {
-        FlyingPathNavigation navigation = new FlyingPathNavigation(this, pLevel) {
-            public boolean isStableDestination(BlockPos pPos) {
-                return !level().getBlockState(pPos.below()).isAir();
+    protected @NotNull PathNavigation createNavigation(@NotNull Level level) {
+        FlyingPathNavigation navigation = new FlyingPathNavigation(this, level) {
+            public boolean isStableDestination(BlockPos pos) {
+                return !level().getBlockState(pos.below()).isAir();
             }
         };
         navigation.setCanOpenDoors(false);
@@ -92,12 +92,12 @@ public class Firefly extends NaturalistAnimal implements FlyingAnimal, Naturalis
     }
 
     @Override
-    public boolean causeFallDamage(float pFallDistance, float pMultiplier, @NotNull DamageSource pSource) {
+    public boolean causeFallDamage(float fallDistance, float multiplier, @NotNull DamageSource source) {
         return false;
     }
 
     @Override
-    protected void checkFallDamage(double pY, boolean pOnGround, @NotNull BlockState pState, @NotNull BlockPos pPos) {
+    protected void checkFallDamage(double y, boolean onGround, @NotNull BlockState state, @NotNull BlockPos pos) {
     }
 
     @Override
@@ -110,12 +110,12 @@ public class Firefly extends NaturalistAnimal implements FlyingAnimal, Naturalis
 
     @Nullable
     @Override
-    public AgeableMob getBreedOffspring(@NotNull ServerLevel p_146743_, @NotNull AgeableMob p_146744_) {
+    public AgeableMob getBreedOffspring(@NotNull ServerLevel level, @NotNull AgeableMob mob) {
         return null;
     }
 
     @Override
-    public boolean isFood(@NotNull ItemStack pStack) {
+    public boolean isFood(@NotNull ItemStack stack) {
         return false;
     }
 
@@ -215,7 +215,7 @@ public class Firefly extends NaturalistAnimal implements FlyingAnimal, Naturalis
 
     @Nullable
     @Override
-    protected SoundEvent getHurtSound(@NotNull DamageSource pDamageSource) {
+    protected SoundEvent getHurtSound(@NotNull DamageSource damageSource) {
         return NaturalistSoundEvents.FIREFLY_HURT.get();
     }
 
@@ -250,9 +250,9 @@ public class Firefly extends NaturalistAnimal implements FlyingAnimal, Naturalis
     static class FireflyHideInGrassGoal extends MoveToBlockGoal {
         private final Firefly firefly;
 
-        public FireflyHideInGrassGoal(Firefly pMob, double pSpeedModifier, int pSearchRange, int pVerticalSearchRange) {
-            super(pMob, pSpeedModifier, pSearchRange, pVerticalSearchRange);
-            this.firefly = pMob;
+        public FireflyHideInGrassGoal(Firefly mob, double speedModifier, int searchRange, int verticalSearchRange) {
+            super(mob, speedModifier, searchRange, verticalSearchRange);
+            this.firefly = mob;
         }
 
         @Override
@@ -261,8 +261,8 @@ public class Firefly extends NaturalistAnimal implements FlyingAnimal, Naturalis
         }
 
         @Override
-        protected boolean isValidTarget(LevelReader pLevel, @NotNull BlockPos pPos) {
-            return pLevel.getBlockState(pPos).is(Blocks.SHORT_GRASS) || pLevel.getBlockState(pPos).is(Blocks.FERN) || pLevel.getBlockState(pPos).is(Blocks.TALL_GRASS);
+        protected boolean isValidTarget(LevelReader level, @NotNull BlockPos pos) {
+            return level.getBlockState(pos).is(Blocks.SHORT_GRASS) || level.getBlockState(pos).is(Blocks.FERN) || level.getBlockState(pos).is(Blocks.TALL_GRASS);
         }
 
         @Override

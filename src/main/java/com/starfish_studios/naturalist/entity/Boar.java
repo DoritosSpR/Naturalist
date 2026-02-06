@@ -116,10 +116,10 @@ public class Boar extends NaturalistAnimal implements NeutralMob, NaturalistGeoE
     }
 
     @Override
-    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor pLevel, @NotNull DifficultyInstance pDifficulty, @NotNull MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
-        super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
+    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor level, @NotNull DifficultyInstance difficulty, @NotNull MobSpawnType reason, @Nullable SpawnGroupData spawnData) {
+        super.finalizeSpawn(level, difficulty, reason, spawnData);
 
-        return pSpawnData;
+        return spawnData;
     }
 
     @Override

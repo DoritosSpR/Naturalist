@@ -145,21 +145,21 @@ public class Bird extends ShoulderRidingEntity implements FlyingAnimal, Naturali
         return super.mobInteract(player, hand);
     }
 
-    public boolean hurt(@NotNull DamageSource pSource, float pAmount) {
-        if (this.isInvulnerableTo(pSource)) {
+    public boolean hurt(@NotNull DamageSource source, float amount) {
+        if (this.isInvulnerableTo(source)) {
             return false;
         } else {
             if (!this.level().isClientSide) {
                 this.setOrderedToSit(false);
             }
 
-            return super.hurt(pSource, pAmount);
+            return super.hurt(source, amount);
         }
     }
 
 
     @Override
-    public boolean isFood(@NotNull ItemStack pStack) {
+    public boolean isFood(@NotNull ItemStack stack) {
         return false;
     }
 
@@ -169,8 +169,8 @@ public class Bird extends ShoulderRidingEntity implements FlyingAnimal, Naturali
     }
 
     @Override
-    protected @NotNull PathNavigation createNavigation(@NotNull Level pLevel) {
-        FlyingPathNavigation navigation = new FlyingPathNavigation(this, pLevel);
+    protected @NotNull PathNavigation createNavigation(@NotNull Level level) {
+        FlyingPathNavigation navigation = new FlyingPathNavigation(this, level);
         navigation.setCanOpenDoors(false);
         navigation.setCanFloat(true);
         navigation.setCanPassDoors(true);
@@ -213,12 +213,12 @@ public class Bird extends ShoulderRidingEntity implements FlyingAnimal, Naturali
     }
 
     @Override
-    public boolean causeFallDamage(float pFallDistance, float pMultiplier, @NotNull DamageSource pSource) {
+    public boolean causeFallDamage(float fallDistance, float multiplier, @NotNull DamageSource source) {
         return false;
     }
 
     @Override
-    protected void checkFallDamage(double pY, boolean pOnGround, @NotNull BlockState pState, @NotNull BlockPos pPos) {
+    protected void checkFallDamage(double y, boolean onGround, @NotNull BlockState state, @NotNull BlockPos pos) {
     }
 
     @Override
@@ -227,9 +227,9 @@ public class Bird extends ShoulderRidingEntity implements FlyingAnimal, Naturali
     }
 
     @Override
-    protected void doPush(@NotNull Entity pEntity) {
-        if (!(pEntity instanceof Player)) {
-            super.doPush(pEntity);
+    protected void doPush(@NotNull Entity entity) {
+        if (!(entity instanceof Player)) {
+            super.doPush(entity);
         }
     }
 
@@ -240,7 +240,7 @@ public class Bird extends ShoulderRidingEntity implements FlyingAnimal, Naturali
 
     @Nullable
     @Override
-    protected SoundEvent getHurtSound(@NotNull DamageSource pDamageSource) {
+    protected SoundEvent getHurtSound(@NotNull DamageSource damageSource) {
         return NaturalistSoundEvents.BIRD_HURT.get();
     }
 
@@ -382,9 +382,9 @@ public class Bird extends ShoulderRidingEntity implements FlyingAnimal, Naturali
     static class BirdFlockGoal extends FollowAdultGoal {
         private final @NotNull Bird bird;
 
-        public BirdFlockGoal(@NotNull Bird pMob, double pSpeedModifier, float pStopDistance, float pAreaSize) {
-            super(pMob, pSpeedModifier, pStopDistance, pAreaSize);
-            this.bird = pMob;
+        public BirdFlockGoal(@NotNull Bird mob, double speedModifier, float stopDistance, float areaSize) {
+            super(mob, speedModifier, stopDistance, areaSize);
+            this.bird = mob;
         }
 
         @Override

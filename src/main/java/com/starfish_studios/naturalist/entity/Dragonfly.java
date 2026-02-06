@@ -59,8 +59,8 @@ public class Dragonfly extends PathfinderMob implements NaturalistGeoEntity {
     }
 
     @SuppressWarnings("all")
-    public static boolean checkDragonflySpawnRules(EntityType<? extends Dragonfly> pType, ServerLevelAccessor pLevel, MobSpawnType pReason, BlockPos pPos, RandomSource pRandom) {
-        return pLevel.getBlockState(pPos.below()).is(NaturalistTags.BlockTags.DRAGONFLIES_SPAWNABLE_ON);
+    public static boolean checkDragonflySpawnRules(EntityType<? extends Dragonfly> type, ServerLevelAccessor level, MobSpawnType reason, BlockPos pos, RandomSource random) {
+        return level.getBlockState(pos.below()).is(NaturalistTags.BlockTags.DRAGONFLIES_SPAWNABLE_ON);
     }
 
     public int getVariant() {

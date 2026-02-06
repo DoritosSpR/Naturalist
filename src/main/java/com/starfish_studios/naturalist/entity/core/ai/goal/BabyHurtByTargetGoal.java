@@ -7,8 +7,8 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import org.jetbrains.annotations.NotNull;
 
 public class BabyHurtByTargetGoal extends HurtByTargetGoal {
-    public BabyHurtByTargetGoal(PathfinderMob pMob, Class<?>... pToIgnoreDamage) {
-        super(pMob, pToIgnoreDamage);
+    public BabyHurtByTargetGoal(PathfinderMob mob, Class<?>... toIgnoreDamage) {
+        super(mob, toIgnoreDamage);
     }
 
     @Override
@@ -21,9 +21,9 @@ public class BabyHurtByTargetGoal extends HurtByTargetGoal {
     }
 
     @Override
-    protected void alertOther(Mob pMob, @NotNull LivingEntity pTarget) {
-        if (!pMob.isBaby()) {
-            super.alertOther(pMob, pTarget);
+    protected void alertOther(Mob mob, @NotNull LivingEntity target) {
+        if (!mob.isBaby()) {
+            super.alertOther(mob, target);
         }
     }
 }

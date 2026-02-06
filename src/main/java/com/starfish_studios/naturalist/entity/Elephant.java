@@ -184,16 +184,15 @@ public class Elephant extends NaturalistAnimal implements NeutralMob, Naturalist
     }
 
     @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
-        super.addAdditionalSaveData(pCompound);
-        this.addPersistentAngerSaveData(pCompound);
-        // pCompound.putInt("DirtyTicks", this.getDirtyTicks());
+    public void addAdditionalSaveData(@NotNull CompoundTag compoundTag) {
+        super.addAdditionalSaveData(compoundTag);
+        this.addPersistentAngerSaveData(compoundTag);
     }
 
     @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
-        super.readAdditionalSaveData(pCompound);
-        this.readPersistentAngerSaveData(this.level(), pCompound);
+    public void readAdditionalSaveData(@NotNull CompoundTag compoundTag) {
+        super.readAdditionalSaveData(compoundTag);
+        this.readPersistentAngerSaveData(this.level(), compoundTag);
     }
 
     @Override
@@ -217,8 +216,8 @@ public class Elephant extends NaturalistAnimal implements NeutralMob, Naturalist
     }
 
     @Override
-    public void setRemainingPersistentAngerTime(int pTime) {
-        this.entityData.set(REMAINING_ANGER_TIME, pTime);
+    public void setRemainingPersistentAngerTime(int time) {
+        this.entityData.set(REMAINING_ANGER_TIME, time);
     }
 
     @Nullable
@@ -228,8 +227,8 @@ public class Elephant extends NaturalistAnimal implements NeutralMob, Naturalist
     }
 
     @Override
-    public void setPersistentAngerTarget(@Nullable UUID pTarget) {
-        this.persistentAngerTarget = pTarget;
+    public void setPersistentAngerTarget(@Nullable UUID target) {
+        this.persistentAngerTarget = target;
     }
 
     public AnimatableInstanceCache getAnimatableInstanceCache() {

@@ -101,7 +101,7 @@ public class Tortoise extends TamableAnimal implements NaturalistGeoEntity, Hidi
 
     @Nullable
     @Override
-    protected SoundEvent getHurtSound(@NotNull DamageSource pDamageSource) {
+    protected SoundEvent getHurtSound(@NotNull DamageSource damageSource) {
         return this.isInSittingPose() ? SoundEvents.SHIELD_BLOCK : NaturalistSoundEvents.TORTOISE_HURT.get();
     }
 
