@@ -290,11 +290,11 @@ public class Butterfly extends NaturalistAnimal implements NaturalistGeoEntity, 
     protected void playStepSound(@NotNull BlockPos pos, @NotNull BlockState state) {
     }
 
-    @Override
-    protected void dropCustomDeathLoot(@NotNull DamageSource source, int lootingMultiplier, boolean hitByPlayer) {
-        super.dropCustomDeathLoot(source, lootingMultiplier, hitByPlayer);
+    protected void dropCustomDeathLoot(@NotNull ServerLevel level, @NotNull DamageSource damageSource, boolean recentlyHit) {
+        super.dropCustomDeathLoot(level, damageSource, recentlyHit);
         this.spawnAtLocation(this.getVariantDye());
     }
+
 
     private ItemStack getVariantDye() {
         return switch (this.getVariant()) {

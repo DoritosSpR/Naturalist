@@ -114,7 +114,7 @@ public class AddAnimalsBiomeModifier implements BiomeModifier {
 
     void addMobSpawn(ModifiableBiomeInfo.BiomeInfo.Builder builder, Holder<Biome> biome, TagKey<Biome> tag, MobCategory mobCategory, EntityType<?> entityType, int weight, int minGroupSize, int maxGroupSize) {
         if (weight <= 0) {
-            builder.getMobSpawnSettings().getSpawner(mobCategory).removeIf(spawnerData -> spawnerData.type() == entityType);
+            builder.getMobSpawnSettings().getSpawner(mobCategory).removeIf(spawnerData -> spawnerData.type == entityType);
             return;
         }
         if (biome.is(tag)) {
