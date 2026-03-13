@@ -1,0 +1,42 @@
+name: NeoForge Build
+
+on:
+  push:
+    branches: [ "1.21.1-Arch" ]
+  pull_request:
+    branches: [ "1.21.1-Arch" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Descargar el código del repositorio
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # 2. Configurar Java 21 (Requerido para Minecraft 1.21.1)
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: 'gradle'
+
+    # 3. Dar permisos de ejecución al wrapper de Gradle
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    # 4. Compilar el mod
+    # 'build' ejecuta los tests y genera el archivo .jar
+    - name: Build with Gradle
+      run: ./gradlew build
+
+    # 5. Guardar el archivo .jar generado como un artefacto
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: NeoForge-Mod-1.21.1
+        # Ajusta la ruta si tu mod genera el jar en una carpeta distinta
+        path: build/libs/*.jar
+        if-no-files-found: error
